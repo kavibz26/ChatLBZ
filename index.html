@@ -3,55 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>ChatLBZ - DEVER AI: צ'אט בוט חכם בעברית</title>
-    <meta name="description" content="דברו עם DEVER, בינה מלאכותית מתקדמת בעברית ובאנגלית. הצ'אט בוט הכי חכם שבניתי!">
-    <meta name="keywords" content="צ'אט בוט, בינה מלאכותית, DEVER, ChatLBZ, AI Hebrew, פיתוח אתרים">
-    <meta name="author" content="Kavibz26">
-
-    <meta property="og:title" content="ChatLBZ - DEVER AI">
-    <meta property="og:description" content="בואו לדבר עם הבוט החדש שלי!">
-    <meta property="og:url" content="https://kavibz26.github.io/ChatLBZ/">
-    <meta property="og:type" content="website">
-
+    <title>ChatLBZ - DEVER AI Party</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; display: flex; flex-direction: column; height: 100vh; margin: 0; color: #333; }
-        #header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        #header h1 { margin: 0; font-size: 1.2rem; color: #444; }
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-color: #ffffff; }
-        .message { max-width: 80%; margin: 12px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; }
-        .user { align-self: flex-end; background-color: #f0f0f0; color: #222; border: 1px solid #e0e0e0; }
-        .bot { align-self: flex-start; background-color: transparent; color: #333; }
-        .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; margin-bottom: 4px; }
-        #input-area { padding: 20px; background: #fff; border-top: 1px solid #eee; }
+        /* אופציה 2: רקע משולב כמו בקנבה - טורקיז וירוק */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #72edda 0%, #72e97e 100%);
+            background-attachment: fixed;
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            margin: 0; 
+            color: #333; 
+            transition: background 0.8s ease; /* מעבר חלק במסיבה */
+        }
+        
+        #header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); }
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
+        
+        .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .user { align-self: flex-end; background-color: #ffffff; color: #222; }
+        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.4); color: #333; border: 1px solid rgba(255,255,255,0.5); }
+        .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; }
+
+        #input-area { padding: 20px; background: rgba(255,255,255,0.9); border-top: 1px solid #eee; }
         .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
-        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 1rem; }
-        .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; }
+        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
+        
+        .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; transition: 0.3s; }
         .btn-send { background-color: #0084ff; color: white; }
-        .btn-clear { background-color: #ff4d4d; color: white; font-size: 0.8rem; }
+        .btn-clear { background-color: #ff4d4d; color: white; }
+        #stop-party { display: none; background: #333; color: #fff; margin-left: 10px; }
     </style>
 </head>
 <body>
 
 <div id="header">
-    <h1>DEVER AI Ultra</h1>
-    <button class="btn btn-clear" onclick="clearChat()">מחק שיחה 🗑️</button>
+    <h1>DEVER - Party Mode</h1>
+    <div>
+        <button id="stop-party" class="btn" onclick="stopParty()">עצור מסיבה 🛑</button>
+        <button class="btn btn-clear" onclick="clearChat()">מחק שיחה 🗑️</button>
+    </div>
 </div>
 
 <div id="chat-container">
-    <div class="message bot" id="welcome-msg">שלום! אני DEVER. המוח שלי מעודכן ומוכן לגוגל. על מה נדבר?</div>
+    <div class="message bot">היי! הרקע החדש כאן. נסה לכתוב לי "מסיבה" ותראה מה קורה! 🎉</div>
 </div>
 
 <div id="input-area">
     <div class="input-wrapper">
-        <input type="text" id="user-input" placeholder="כתוב הודעה..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <input type="text" id="user-input" placeholder="כתוב משהו..." onkeypress="if(event.key==='Enter') sendMessage()">
         <button class="btn btn-send" onclick="sendMessage()">שלח</button>
     </div>
 </div>
 
 <script>
-    let userName = localStorage.getItem("userName") || "";
-    if (userName) document.getElementById("welcome-msg").innerText = "שלום " + userName + "! איך אפשר לעזור היום?";
+    let partyInterval;
+    const partyColors = [
+        "linear-gradient(135deg, #ffcfdf 0%, #b0f3f1 100%)",
+        "linear-gradient(135deg, #e2ebf0 0%, #cfd9df 100%)",
+        "linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%)",
+        "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)",
+        "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
+    ];
 
     function sendMessage() {
         const input = document.getElementById("user-input");
@@ -71,49 +85,47 @@
         container.scrollTop = container.scrollHeight;
     }
 
+    function startParty() {
+        if (partyInterval) return;
+        document.getElementById("stop-party").style.display = "inline-block";
+        partyInterval = setInterval(() => {
+            const randomColor = partyColors[Math.floor(Math.random() * partyColors.length)];
+            document.body.style.background = randomColor;
+        }, 1000); // החלפה כל שנייה (לא מהיר מדי)
+    }
+
+    function stopParty() {
+        clearInterval(partyInterval);
+        partyInterval = null;
+        document.getElementById("stop-party").style.display = "none";
+        document.body.style.background = "linear-gradient(135deg, #72edda 0%, #72e97e 100%)";
+    }
+
     function clearChat() {
-        if (confirm("למחוק את כל השיחה?")) {
+        if (confirm("למחוק הכל?")) {
             document.getElementById("chat-container").innerHTML = '<div class="message bot">השיחה אותחלה.</div>';
+            stopParty();
         }
     }
 
     function reply(text) {
         const t = text.toLowerCase().trim();
-
-        if (t.includes("קוראים לי") || t.includes("השם שלי הוא")) {
-            userName = text.replace("קוראים לי", "").replace("השם שלי הוא", "").trim();
-            localStorage.setItem("userName", userName);
-            return "נעים מאוד, " + userName + "! עכשיו אני מכיר אותך.";
+        
+        if (t === "מסיבה" || t.includes("party")) {
+            startParty();
+            return "יאללה מסיבה! 🎉 האורות מתחלפים. תהנה!";
         }
 
-        const data = {
-            animals: ["כלב", "חתול", "פיל", "אריה", "נמר", "דב", "נחש", "ציפור", "עכבר", "סוס", "dog", "cat", "lion", "tiger", "bear", "bird"],
-            colors: ["אדום", "כחול", "ירוק", "צהוב", "כתום", "סגול", "ורוד", "שחור", "לבן", "red", "blue", "green", "yellow", "pink", "black"],
-            food: ["פיצה", "המבורגר", "פסטה", "סלט", "לחם", "אורז", "עוגה", "pizza", "burger", "pasta", "salad", "cake"],
-            countries: ["ישראל", "צרפת", "איטליה", "יפן", "סין", "יוון", "israel", "france", "italy", "japan", "greece"],
-            tech: ["מחשב", "טלפון", "אינטרנט", "קוד", "אתר", "computer", "phone", "internet", "code", "website"],
-            languages: ["עברית", "אנגלית", "ערבית", "רוסית", "צרפתית", "hebrew", "english", "arabic", "french"]
-        };
-
-        if (data.animals.some(word => t.includes(word))) return "חיות הן יצורים מדהימים, במיוחד " + t + "!";
-        if (data.colors.some(word => t.includes(word))) return "זה צבע ממש יפה!";
-        if (data.food.some(word => t.includes(word))) return "וואי, " + t + " נשמע ממש טעים!";
-        if (data.countries.some(word => t.includes(word))) return t + " זה מקום מרתק לבקר בו.";
-        if (data.tech.some(word => t.includes(word))) return "טכנולוגיה זה התחום שלי! אני אוהב את " + t + ".";
-        if (data.languages.some(word => t.includes(word))) return t + " היא שפה מרתקת!";
-
         const dict = {
-            "שלום": "אהלן! איך הולך?",
-            "מה קורה": "אצלי הכל מצוין, מה איתך?",
-            "מי אתה": "אני DEVER, הבינה המלאכותית שאתה בנית!",
-            "בדיחה": "למה המחשב הלך לרופא? כי היה לו וירוס!",
-            "מה השם שלי": userName ? "השם שלך הוא " + userName : "עוד לא אמרת לי איך קוראים לך...",
-            "hello": "Hi! How can I help you?",
-            "thanks": "You're very welcome!"
+            "שלום": "אהלן! איך הרקע החדש?",
+            "מה קורה": "הכל מעולה, מרגיש כמו בקנבה!",
+            "מי אתה": "אני DEVER, הבוט הכי צבעוני שיש.",
+            "בדיחה": "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים!",
+            "תודה": "בכיף אחי!"
         };
 
         for (let key in dict) { if (t.includes(key)) return dict[key]; }
-        return "מעניין... '" + text + "' זה משהו חדש. ספר לי עוד?";
+        return "מגניב! תגיד 'מסיבה' אם בא לך קצת אקשן.";
     }
 </script>
 </body>
