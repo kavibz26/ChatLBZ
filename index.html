@@ -3,139 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ - הבוט החכם שלי</title>
-    
+    <title>ChatLBZ - AI</title>
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
             background: linear-gradient(135deg, #72edda 0%, #72e97e 100%);
             background-attachment: fixed;
             display: flex; flex-direction: column; height: 100vh; margin: 0; 
             transition: background 0.6s ease;
         }
-        
-        #header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); }
+        #header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.9); }
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        
         .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .user { align-self: flex-end; background-color: #ffffff; color: #222; }
-        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.4); color: #333; border: 1px solid rgba(255,255,255,0.5); }
-        /* שינוי השם שמופיע מעל הודעות הבוט */
+        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.5); color: #333; }
         .bot::before { content: "ChatLBZ: "; font-weight: bold; color: #0084ff; display: block; }
-
-        #input-area { padding: 20px; background: rgba(255,255,255,0.9); border-top: 1px solid #eee; }
+        #input-area { padding: 20px; background: white; border-top: 1px solid #eee; }
         .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
-        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
-        
+        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 16px; }
         .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; }
         .btn-send { background-color: #0084ff; color: white; }
-        #stop-party-btn { display: none; background: #333; color: white; }
     </style>
 </head>
 <body id="main-body">
 
 <div id="header">
     <h1>ChatLBZ AI</h1>
-    <div>
-        <button id="stop-party-btn" class="btn" onclick="stopParty()">עצור מסיבה 🛑</button>
-        <button class="btn" style="background:#ff4d4d; color:white;" onclick="location.reload()">איפוס</button>
-    </div>
+    <button class="btn" style="background:#333; color:white; display:none;" id="stop-btn" onclick="stopParty()">עצור 🛑</button>
 </div>
 
-<div id="chat-container">
-    <div class="message bot">שלום! אני ChatLBZ. המילון שלי מוכן ואני זמין לשיחה או למסיבה! 🎉</div>
+<div id="chat-container" id="chat">
+    <div class="message bot">היי! אני ChatLBZ. הכל תוקן, אפשר לכתוב לי! 🎉</div>
 </div>
 
 <div id="input-area">
     <div class="input-wrapper">
-        <input type="text" id="user-input" placeholder="כתוב הודעה ל-ChatLBZ..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <input type="text" id="user-input" placeholder="כתוב כאן..." onkeypress="if(event.key==='Enter') sendMessage()">
         <button class="btn btn-send" onclick="sendMessage()">שלח</button>
     </div>
 </div>
 
 <script>
     let partyInterval = null;
-    const partyColors = [
-        "linear-gradient(135deg, #ffcfdf 0%, #b0f3f1 100%)",
-        "linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%)",
-        "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)",
-        "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
-    ];
-
-    function sendMessage() {
-        const input = document.getElementById("user-input");
-        const val = input.value.trim();
-        if (!val) return;
-        
-        addMessage(val, "user");
-        input.value = "";
-        setTimeout(() => { addMessage(reply(val), "bot"); }, 500);
-    }
 
     function addMessage(text, sender) {
+        const container = document.getElementById("chat-container");
         const div = document.createElement("div");
         div.className = "message " + sender;
         div.innerText = text;
-        const container = document.getElementById("chat-container");
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
 
     function startParty() {
         if (partyInterval) return;
-        document.getElementById("stop-party-btn").style.display = "inline-block";
+        document.getElementById("stop-btn").style.display = "block";
+        const colors = ["#ffcfdf", "#fff1eb", "#d4fc79", "#a1c4fd", "#e0c3fc"];
         partyInterval = setInterval(() => {
-            const random = partyColors[Math.floor(Math.random() * partyColors.length)];
-            document.getElementById("main-body").style.background = random;
+            const c = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.background = c;
         }, 800);
     }
 
     function stopParty() {
         clearInterval(partyInterval);
         partyInterval = null;
-        document.getElementById("stop-party-btn").style.display = "none";
-        document.getElementById("main-body").style.background = "linear-gradient(135deg, #72edda 0%, #72e97e 100%)";
+        document.getElementById("stop-btn").style.display = "none";
+        document.body.style.background = "linear-gradient(135deg, #72edda 0%, #72e97e 100%)";
     }
 
-    function reply(text) {
-        const t = text.toLowerCase().trim();
+    function sendMessage() {
+        const input = document.getElementById("user-input");
+        const text = input.value.trim();
+        if (!text) return;
+
+        addMessage(text, "user");
+        input.value = "";
+
+        const t = text.toLowerCase();
+
+        // לוגיקת תגובות
+        let response = "מעניין... תוכל להסביר עוד?";
 
         if (t.includes("מסיבה")) {
             startParty();
-            return "יאללה מסיבה! 🎉 תגיד 'מספיק' כשנמאס לך.";
-        }
-        if (t.includes("מספיק") || t.includes("די")) {
+            response = "יאללה מסיבה! 🎉";
+        } else if (t.includes("מספיק") || t.includes("די")) {
             stopParty();
-            return "אוקיי, ChatLBZ חוזר למצב רגוע.";
+            response = "הפסקתי את האורות.";
+        } else if (t.includes("שלום") || t.includes("היי")) {
+            response = "אהלן! איך הולך?";
+        } else if (t.includes("מה קורה")) {
+            response = "אצלי הכל מצוין, מה איתך?";
+        } else if (t.includes("בדיחה")) {
+            response = "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים!";
+        } else if (t.includes("כלב") || t.includes("חתול") || t.includes("אריה")) {
+            response = "אני מת על חיות!";
+        } else if (t.includes("פיצה") || t.includes("המבורגר")) {
+            response = "עשית לי חשק לאכול!";
         }
 
-        const data = {
-            animals: ["כלב", "חתול", "פיל", "אריה", "נמר", "דב", "נחש", "ציפור", "סוס", "dog", "cat", "lion", "bird"],
-            colors: ["אדום", "כחול", "ירוק", "צהוב", "ורוד", "שחור", "לבן", "red", "blue", "green", "pink"],
-            food: ["פיצה", "המבורגר", "פסטה", "סלט", "אורז", "עוגה", "pizza", "burger", "pasta", "cake"],
-            countries: ["ישראל", "צרפת", "איטליה", "יפן", "אנגליה", "israel", "france", "italy", "japan"],
-            tech: ["מחשב", "טלפון", "אינטרנט", "קוד", "אתר", "יוטיוב", "גוגל", "computer", "phone", "code"],
-            languages: ["עברית", "אנגלית", "ערבית", "רוסית", "צרפתית", "hebrew", "english", "arabic"]
-        };
-
-        if (data.animals.some(word => t.includes(word))) return "חיות הן יצורים מדהימים, במיוחד " + t + "!";
-        if (data.colors.some(word => t.includes(word))) return "זה צבע ממש יפה!";
-        if (data.food.some(word => t.includes(word))) return "וואי, " + t + " נשמע טעים!";
-        if (data.countries.some(word => t.includes(word))) return t + " זה מקום מרתק.";
-        if (data.tech.some(word => t.includes(word))) return "טכנולוגיה זה התחום שלי!";
-        if (data.languages.some(word => t.includes(word))) return t + " היא שפה מעניינת מאוד.";
-
-        const dict = {
-            "שלום": "אהלן אחי! איך הולך עם ChatLBZ?",
-            "מה קורה": "הכל מעולה, ChatLBZ כאן בשבילך!",
-            "מי אתה": "אני ChatLBZ, הבינה המלאכותית החדשה שלך.",
-            "בדיחה": "למה המחשב הלך לרופא? כי היה לו וירוס!",
-            "תודה": "בכיף!"
-        };
-
-        for (let key in dict) { if (t.includes(key)) return dict[key]; }
-        return "מעניין... '" + text + "' זה משהו ש-ChatLBZ עדיין לומד.";
+        setTimeout(() => addMessage(response, "bot"), 600);
     }
 </script>
 </body>
-</html>ר
+</html>
