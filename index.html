@@ -12,33 +12,79 @@
             display: flex; flex-direction: column; height: 100vh; margin: 0; 
             transition: background 0.6s ease;
         }
-        #header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.9); }
+
+        /* עיצוב הלוגו ב-CSS - כחול ותכלת */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-circle {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            /* שילוב של כחול ותכלת */
+            background: linear-gradient(135deg, #0044ff 0%, #87ceeb 100%); 
+            border: 2px solid #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            font-family: 'Arial Black', sans-serif;
+            color: white; /* טקסט לבן על רקע כחול */
+        }
+        .logo-text {
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+        .logo-number {
+            font-size: 11px;
+            margin-top: 3px;
+            border-top: 1px solid rgba(255,255,255,0.4);
+            padding-top: 2px;
+            font-weight: bold;
+        }
+
+        #header { padding: 10px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.9); }
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
+        
         .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .user { align-self: flex-end; background-color: #ffffff; color: #222; }
-        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.5); color: #333; }
-        .bot::before { content: "ChatLBZ: "; font-weight: bold; color: #0084ff; display: block; }
+        .user { align-self: flex-end; background-color: #ffffff; color: #222; border: 1px solid #eee; }
+        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.6); color: #333; }
+        .bot::before { content: "ChatLBZ: "; font-weight: bold; color: #0044ff; display: block; }
+        
         #input-area { padding: 20px; background: white; border-top: 1px solid #eee; }
         .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
         input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 16px; }
+        
         .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; }
-        .btn-send { background-color: #0084ff; color: white; }
+        .btn-send { background-color: #0044ff; color: white; }
+        #stop-btn { display: none; background: #333; color: white; }
     </style>
 </head>
 <body id="main-body">
 
 <div id="header">
-    <h1>ChatLBZ AI</h1>
-    <button class="btn" style="background:#333; color:white; display:none;" id="stop-btn" onclick="stopParty()">עצור 🛑</button>
+    <div class="logo-container">
+        <div class="logo-circle">
+            <div class="logo-text">L.B.Z</div>
+            <div class="logo-number">26</div>
+        </div>
+        <h1 style="margin:0; font-size: 1.4rem; color: #0044ff;">ChatLBZ</h1>
+    </div>
+    <button class="btn" id="stop-btn" onclick="stopParty()">עצור מסיבה 🛑</button>
 </div>
 
-<div id="chat-container" id="chat">
-    <div class="message bot">היי! אני ChatLBZ. הכל תוקן, אפשר לכתוב לי! 🎉</div>
+<div id="chat-container">
+    <div class="message bot">ברוכים הבאים! הלוגו הכחול של ChatLBZ מוכן. איך זה נראה עכשיו? 🌊</div>
 </div>
 
 <div id="input-area">
     <div class="input-wrapper">
-        <input type="text" id="user-input" placeholder="כתוב כאן..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <input type="text" id="user-input" placeholder="כתוב משהו..." onkeypress="if(event.key==='Enter') sendMessage()">
         <button class="btn btn-send" onclick="sendMessage()">שלח</button>
     </div>
 </div>
@@ -58,10 +104,9 @@
     function startParty() {
         if (partyInterval) return;
         document.getElementById("stop-btn").style.display = "block";
-        const colors = ["#ffcfdf", "#fff1eb", "#d4fc79", "#a1c4fd", "#e0c3fc"];
+        const colors = ["#ff9a9e", "#a1c4fd", "#84fab0", "#fccb90", "#e0c3fc"];
         partyInterval = setInterval(() => {
-            const c = colors[Math.floor(Math.random() * colors.length)];
-            document.body.style.background = c;
+            document.body.style.background = colors[Math.floor(Math.random() * colors.length)];
         }, 800);
     }
 
@@ -74,34 +119,20 @@
 
     function sendMessage() {
         const input = document.getElementById("user-input");
-        const text = input.value.trim();
-        if (!text) return;
+        const t = input.value.trim();
+        if (!t) return;
 
-        addMessage(text, "user");
+        addMessage(t, "user");
         input.value = "";
 
-        const t = text.toLowerCase();
+        let response = "ChatLBZ עדיין לומד... תנסה משהו אחר?";
+        const msg = t.toLowerCase();
 
-        // לוגיקת תגובות
-        let response = "מעניין... תוכל להסביר עוד?";
-
-        if (t.includes("מסיבה")) {
-            startParty();
-            response = "יאללה מסיבה! 🎉";
-        } else if (t.includes("מספיק") || t.includes("די")) {
-            stopParty();
-            response = "הפסקתי את האורות.";
-        } else if (t.includes("שלום") || t.includes("היי")) {
-            response = "אהלן! איך הולך?";
-        } else if (t.includes("מה קורה")) {
-            response = "אצלי הכל מצוין, מה איתך?";
-        } else if (t.includes("בדיחה")) {
-            response = "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים!";
-        } else if (t.includes("כלב") || t.includes("חתול") || t.includes("אריה")) {
-            response = "אני מת על חיות!";
-        } else if (t.includes("פיצה") || t.includes("המבורגר")) {
-            response = "עשית לי חשק לאכול!";
-        }
+        if (msg.includes("מסיבה")) { startParty(); response = "יאללה מסיבה! 🎉"; }
+        else if (msg.includes("מספיק") || msg.includes("די")) { stopParty(); response = "הפסקתי את האורות."; }
+        else if (msg.includes("שלום") || msg.includes("היי")) { response = "אהלן! איך הולך?"; }
+        else if (msg.includes("לוגו")) { response = "כחול ותכלת עם המספר 26, בדיוק כמו שביקשת!"; }
+        else if (msg.includes("בדיחה")) { response = "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים!"; }
 
         setTimeout(() => addMessage(response, "bot"), 600);
     }
