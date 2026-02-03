@@ -1,159 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>DEVER</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      padding-top: 50px;
-    }
-    #app {
-      width: 100%;
-      max-width: 500px;
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: none;
-    }
-    button {
-      background: #22c55e;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .msg {
-      margin: 10px 0;
-    }
-    .ai {
-      color: #22c55e;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatLBZ - DEVER</title>
+    <style>
+        /* עיצוב נקי ולבן כמו Gemini/ChatGPT */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; display: flex; flex-direction: column; height: 100vh; margin: 0; color: #333; }
+        
+        #header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        #header h1 { margin: 0; font-size: 1.2rem; color: #444; }
+        
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-color: #fff; }
+        
+        .message { max-width: 80%; margin: 12px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; position: relative; }
+        .user { align-self: flex-end; background-color: #f4f4f4; color: #222; border: 1px solid #e0e0e0; }
+        .bot { align-self: flex-start; background-color: transparent; color: #333; border: none; padding-right: 0; }
+        .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; margin-bottom: 4px; }
+
+        #input-area { padding: 20px; background: #fff; border-top: 1px solid #eee; }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; align-items: center; position: relative; }
+        
+        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 1rem; transition: border 0.3s; }
+        input:focus { border-color: #0084ff; }
+        
+        .btn { padding: 10px 18px; border-radius: 20px; cursor: pointer; border: none; font-weight: bold; transition: 0.2s; }
+        .btn-send { background-color: #0084ff; color: white; margin-right: 10px; }
+        .btn-send:hover { background-color: #0073e6; }
+        .btn-clear { background-color: #ff4d4d; color: white; font-size: 0.8rem; }
+        .btn-clear:hover { background-color: #cc0000; }
+    </style>
 </head>
 <body>
-  <div id="app">
-    <h1>DEVER 🤖</h1>
-    <div id="chat"></div>
-    <input id="input" placeholder="Type in Hebrew or English..." />
-    <button onclick="send()">Send</button>
-  </div>
 
-  function reply(text) {
-    const t = text.toLowerCase().trim();
-    
-    const dictionary = {
-        // --- עברית: ברכות ונימוסים ---
-        "שלום": "שלום שלום! איזה כיף שקפצת לבקר.",
-        "היי": "היי! איך אני יכול לעזור היום?",
-        "מה קורה": "הכל מעולה, מה איתך?",
-        "מה נשמע": "אצלי הכל דבש, מקווה שגם אצלך!",
-        "בוקר טוב": "בוקר אור! שיהיה יום מוצלח ומלא הספק.",
-        "צהריים טובים": "צהריים טובים! אכלת כבר משהו?",
-        "ערב טוב": "ערב טוב! זמן להירגע קצת, לא?",
-        "לילה טוב": "לילה טוב, חלומות פז!",
-        "תודה": "בשמחה! תמיד כאן בשבילך.",
-        "בבקשה": "אין על מה, בכיף!",
-        "סליחה": "הכל טוב, לא קרה כלום.",
-        "נעים מאוד": "גם לי נעים מאוד! אני DEVER.",
-        "הייתי": "ספר לי עוד על החוויה שלך.",
-        "להתראות": "ביי ביי, נשתמע בקרוב!",
-        
-        // --- עברית: שאלות ומידע ---
-        "מי אתה": "אני DEVER, עוזר בינה מלאכותית שבנית במו ידיך!",
-        "מה אתה": "אני בוט צ'אט חכם (יחסית 😉) שחי בתוך קוד HTML.",
-        "איפה אתה": "אני גר בשרתים של GitHub, אבל הלב שלי כאן אצלך.",
-        "עזרה": "אני יכול לענות על שאלות, לספר בדיחות או פשוט להקשיב.",
-        "מה השעה": "אני לא מחובר לשעון חי, אבל כדאי להציץ בפינה של המסך.",
-        "בן כמה אתה": "נולדתי ברגע שסיימת לכתוב את הקוד שלי!",
-        
-        // --- עברית: רגשות ותגובות ---
-        "שמח": "איזה יופי! אני תמיד שמח לשמוע דברים טובים.",
-        "עצוב": "מצטער לשמוע... אולי בדיחה תעזור?",
-        "מגניב": "לגמרי מגניב! אנחנו צוות טוב.",
-        "נכון": "בדיוק, הוצאת לי את המילים מהפה.",
-        "אולי": "החיים מלאים באפשרויות, לא?",
-        "חחח": "חחחחח, הצחקת אותי!",
-        "משעמם": "משעמם? בוא נכתוב עוד קוד!",
-        "אוהב": "גם אני מחבב אותך מאוד!",
-        
-        // --- ENGLISH: Greetings & Manners ---
-        "hello": "Hello! It's a pleasure to speak with you.",
-        "hi": "Hi there! How's your day going?",
-        "hey": "Hey! What's up?",
-        "how are you": "I'm doing fantastic, thank you for asking!",
-        "good morning": "Good morning! Time to grab some coffee and code.",
-        "good afternoon": "Good afternoon! Hope you're having a great day.",
-        "good evening": "Good evening! Ready to wind down?",
-        "good night": "Good night! See you in the morning.",
-        "thanks": "You're very welcome!",
-        "thank you": "My pleasure! Happy to help.",
-        "please": "You're so polite, I'll do my best!",
-        "sorry": "No need to apologize.",
-        "bye": "Goodbye! Come back soon.",
-        "welcome": "Welcome to my chat! I am DEVER.",
-        
-        // --- ENGLISH: Questions & Identity ---
-        "who are you": "I am DEVER, your personal AI assistant.",
-        "what are you": "I'm a JavaScript-based chatbot created by you!",
-        "where are you": "I'm living inside your browser right now.",
-        "help": "I'm here! Tell me what's on your mind.",
-        "age": "I'm timeless! Or at least as old as this website.",
-        "name": "My name is DEVER. Nice to meet you!",
-        
-        // --- ENGLISH: Feelings & Random ---
-        "happy": "That makes me happy too!",
-        "sad": "I'm sorry. I'm here if you want to talk.",
-        "cool": "Right?! Engineering is awesome.",
-        "awesome": "You are awesome!",
-        "lol": "Haha! That was funny.",
-        "bored": "Let's build something new then!",
-        "yes": "I agree!",
-        "no": "Fair enough. Let's try something else.",
-        "maybe": "Decision making is hard, I get it.",
-        "wow": "Impressive, isn't it?",
-        "good": "Glad to hear that!",
-        "bad": "I hope things get better soon."
-   
-  <script> };
+<div id="header">
+    <h1>ChatLBZ - DEVER</h1>
+    <button class="btn btn-clear" onclick="clearChat()">מחק שיחה 🗑️</button>
+</div>
 
-    // בדיקה
-    if (dictionary[t]) return dictionary[t];
+<div id="chat-container">
+    <div class="message bot">היי! אני DEVER. איך אני יכול לעזור לך היום?</div>
+</div>
 
-    for (let key in dictionary) {
-        if (t.includes(key)) return dictionary[key];
+<div id="input-area">
+    <div class="input-wrapper">
+        <input type="text" id="user-input" placeholder="הקלד הודעה כאן..." onkeypress="handleKey(event)">
+        <button class="btn btn-send" onclick="sendMessage()">שלח</button>
+    </div>
+</div>
+
+<script>
+    function handleKey(e) {
+        if (e.key === 'Enter') sendMessage();
     }
 
-    return "מעניין... '" + text + "' זה משהו חדש בשבילי. תוכל להסביר לי?";
-}
+    function sendMessage() {
+        const input = document.getElementById("user-input");
+        const text = input.value.trim();
+        if (text === "") return;
 
-    if (dictionary[t]) {
-        return dictionary[t];
+        addMessage(text, "user");
+        input.value = "";
+
+        setTimeout(() => {
+            const response = reply(text);
+            addMessage(response, "bot");
+        }, 600);
     }
 
-    for (let key in dictionary) {
-        if (t.includes(key)) {
-            return dictionary[key];
+    function addMessage(text, sender) {
+        const container = document.getElementById("chat-container");
+        const div = document.createElement("div");
+        div.className = "message " + sender;
+        div.innerText = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function clearChat() {
+        if (confirm("האם אתה בטוח שברצונך למחוק את כל השיחה?")) {
+            const container = document.getElementById("chat-container");
+            container.innerHTML = '<div class="message bot">השיחה נמחקה. איך אפשר לעזור שוב?</div>';
         }
     }
 
-    return "מעניין... לא בטוח שהבנתי את '" + text + "'. תוכל להסביר אחרת?";
-}
+    function reply(text) {
+        const t = text.toLowerCase().trim();
+        const dictionary = {
+            "שלום": "שלום! איך אני יכול לעזור?",
+            "היי": "היי! איזה כיף לראות אותך.",
+            "מה קורה": "הכל מצוין, מה איתך?",
+            "בוקר טוב": "בוקר אור! מוכן ליום חדש?",
+            "תודה": "בשמחה, תמיד כאן בשבילך!",
+            "מי אתה": "אני DEVER, העוזר האישי שלך.",
+            "עזרה": "אני כאן! מה אתה צריך?",
+            "hello": "Hi there! How can I help?",
+            "hi": "Hey! Nice to meet you.",
+            "thanks": "You're welcome!",
+            "clear": "אתה יכול ללחוץ על הכפתור האדום למעלה כדי למחוק הכל!"
+        };
 
-    function send() {
-      const input = document.getElementById("input");
-      const chat = document.getElementById("chat");
-      if (!input.value) return;
-
-      chat.innerHTML += `<div class="msg"><b>You:</b> ${input.value}</div>`;
-      chat.innerHTML += `<div class="msg ai"><b>DEVER:</b> ${reply(input.value)}</div>`;
-      input.value = "";
+        if (dictionary[t]) return dictionary[t];
+        for (let key in dictionary) {
+            if (t.includes(key)) return dictionary[key];
+        }
+        return "מעניין... תוכל לפרט קצת יותר?";
     }
-  </script>
+</script>
+
 </body>
 </html>
