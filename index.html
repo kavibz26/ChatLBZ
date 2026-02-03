@@ -5,49 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatLBZ - DEVER AI Party</title>
     <style>
-        /* אופציה 2: רקע משולב כמו בקנבה - טורקיז וירוק */
+        /* הרקע שבחרת (אופציה 2) */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: linear-gradient(135deg, #72edda 0%, #72e97e 100%);
             background-attachment: fixed;
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            margin: 0; 
-            color: #333; 
-            transition: background 0.8s ease; /* מעבר חלק במסיבה */
+            display: flex; flex-direction: column; height: 100vh; margin: 0; 
+            transition: background 0.5s ease;
         }
         
-        #header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(5px); }
+        #header { padding: 15px 20px; border-bottom: 1px solid rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.8); }
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
         
-        .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .user { align-self: flex-end; background-color: #ffffff; color: #222; }
-        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.4); color: #333; border: 1px solid rgba(255,255,255,0.5); }
+        .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; }
+        .user { align-self: flex-end; background-color: #ffffff; border: 1px solid #ddd; }
+        .bot { align-self: flex-start; background-color: rgba(255,255,255,0.5); font-weight: 500; }
         .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; }
 
-        #input-area { padding: 20px; background: rgba(255,255,255,0.9); border-top: 1px solid #eee; }
+        #input-area { padding: 20px; background: white; border-top: 1px solid #eee; }
         .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
         input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
         
-        .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; transition: 0.3s; }
+        .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; }
         .btn-send { background-color: #0084ff; color: white; }
-        .btn-clear { background-color: #ff4d4d; color: white; }
-        #stop-party { display: none; background: #333; color: #fff; margin-left: 10px; }
+        .btn-stop { background-color: #333; color: white; display: none; }
     </style>
 </head>
-<body>
+<body id="main-body">
 
 <div id="header">
-    <h1>DEVER - Party Mode</h1>
+    <h1>DEVER Party</h1>
     <div>
-        <button id="stop-party" class="btn" onclick="stopParty()">עצור מסיבה 🛑</button>
-        <button class="btn btn-clear" onclick="clearChat()">מחק שיחה 🗑️</button>
+        <button id="stop-btn" class="btn btn-stop" onclick="stopParty()">עצור מסיבה 🛑</button>
+        <button class="btn" style="background:#ff4d4d; color:white;" onclick="location.reload()">איפוס</button>
     </div>
 </div>
 
-<div id="chat-container">
-    <div class="message bot">היי! הרקע החדש כאן. נסה לכתוב לי "מסיבה" ותראה מה קורה! 🎉</div>
+<div id="chat-container" id="chat">
+    <div class="message bot">היי אחי! הרקע של קנבה מוכן. תכתוב "מסיבה" ותראה מה קורה! 🎉</div>
 </div>
 
 <div id="input-area">
@@ -58,74 +53,53 @@
 </div>
 
 <script>
-    let partyInterval;
-    const partyColors = [
-        "linear-gradient(135deg, #ffcfdf 0%, #b0f3f1 100%)",
-        "linear-gradient(135deg, #e2ebf0 0%, #cfd9df 100%)",
-        "linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%)",
-        "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)",
-        "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
+    let partyInterval = null;
+    const colors = [
+        "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+        "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
+        "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
+        "linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)",
+        "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)"
     ];
 
     function sendMessage() {
         const input = document.getElementById("user-input");
-        const text = input.value.trim();
-        if (text === "") return;
-        addMessage(text, "user");
+        const val = input.value.trim();
+        if (!val) return;
+        
+        addMessage(val, "user");
         input.value = "";
-        setTimeout(() => { addMessage(reply(text), "bot"); }, 600);
+
+        if (val === "מסיבה") {
+            startParty();
+            setTimeout(() => addMessage("יאללה מסיבה! 🎉 השתמש בכפתור למעלה כדי לעצור.", "bot"), 500);
+        } else {
+            setTimeout(() => addMessage("מגניב! תכתוב 'מסיבה' אם בא לך אקשן.", "bot"), 600);
+        }
     }
 
     function addMessage(text, sender) {
-        const container = document.getElementById("chat-container");
         const div = document.createElement("div");
         div.className = "message " + sender;
         div.innerText = text;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
+        document.getElementById("chat-container").appendChild(div);
+        document.getElementById("chat-container").scrollTop = document.getElementById("chat-container").scrollHeight;
     }
 
     function startParty() {
         if (partyInterval) return;
-        document.getElementById("stop-party").style.display = "inline-block";
+        document.getElementById("stop-btn").style.display = "inline-block";
         partyInterval = setInterval(() => {
-            const randomColor = partyColors[Math.floor(Math.random() * partyColors.length)];
-            document.body.style.background = randomColor;
-        }, 1000); // החלפה כל שנייה (לא מהיר מדי)
+            const random = colors[Math.floor(Math.random() * colors.length)];
+            document.getElementById("main-body").style.background = random;
+        }, 800);
     }
 
     function stopParty() {
         clearInterval(partyInterval);
         partyInterval = null;
-        document.getElementById("stop-party").style.display = "none";
-        document.body.style.background = "linear-gradient(135deg, #72edda 0%, #72e97e 100%)";
-    }
-
-    function clearChat() {
-        if (confirm("למחוק הכל?")) {
-            document.getElementById("chat-container").innerHTML = '<div class="message bot">השיחה אותחלה.</div>';
-            stopParty();
-        }
-    }
-
-    function reply(text) {
-        const t = text.toLowerCase().trim();
-        
-        if (t === "מסיבה" || t.includes("party")) {
-            startParty();
-            return "יאללה מסיבה! 🎉 האורות מתחלפים. תהנה!";
-        }
-
-        const dict = {
-            "שלום": "אהלן! איך הרקע החדש?",
-            "מה קורה": "הכל מעולה, מרגיש כמו בקנבה!",
-            "מי אתה": "אני DEVER, הבוט הכי צבעוני שיש.",
-            "בדיחה": "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים!",
-            "תודה": "בכיף אחי!"
-        };
-
-        for (let key in dict) { if (t.includes(key)) return dict[key]; }
-        return "מגניב! תגיד 'מסיבה' אם בא לך קצת אקשן.";
+        document.getElementById("stop-btn").style.display = "none";
+        document.getElementById("main-body").style.background = "linear-gradient(135deg, #72edda 0%, #72e97e 100%)";
     }
 </script>
 </body>
