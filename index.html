@@ -5,134 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatLBZ AI 🔵</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: linear-gradient(135deg, #72edda 0%, #72e97e 100%);
-            margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-        }
-        #header { 
-            padding: 15px; background: white; display: flex; align-items: center; 
-            justify-content: space-between; border-bottom: 2px solid #ddd;
-        }
-        #chat-container { 
-            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; 
-        }
-        .welcome-msg { 
-            text-align: center; color: #0044ff; font-size: 1.4rem; font-weight: bold; 
-            margin: 20px auto; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 15px;
-        }
-        .message { 
-            max-width: 80%; margin: 10px 0; padding: 12px; border-radius: 15px; font-size: 16px; 
-        }
-        .user { align-self: flex-end; background: white; border-right: 4px solid #0044ff; }
-        .bot { align-self: flex-start; background: #e3f2fd; border-left: 4px solid #0044ff; }
-        
-        #input-area { 
-            padding: 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #ddd;
-        }
-        input { 
-            flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; font-size: 16px;
-        }
-        .btn { 
-            padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; font-weight: bold;
-        }
-        #stop-party { display: none; background: #333; color: white; }
+        body { font-family: sans-serif; background: #72edda; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px; border-radius: 10px; max-width: 80%; font-size: 18px; }
+        .user { align-self: flex-end; background: white; border: 1px solid #0044ff; }
+        .bot { align-self: flex-start; background: #e3f2fd; border: 1px solid #0044ff; }
+        #input-area { padding: 20px; background: white; display: flex; gap: 10px; }
+        input { flex: 1; padding: 15px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; outline: none; }
+        button { padding: 10px 20px; border-radius: 20px; border: none; background: #0044ff; color: white; font-weight: bold; cursor: pointer; }
+        .welcome { text-align: center; color: #0044ff; font-weight: bold; font-size: 24px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div id="header">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="width:40px; height:40px; background:blue; border-radius:50%; color:white; display:flex; justify:center; align-items:center; font-size:10px; font-weight:bold;">LBZ26</div>
-        <h1 style="margin:0; font-size: 1.2rem; color: #0044ff;">ChatLBZ AI</h1>
-    </div>
-    <button id="stop-party" class="btn" onclick="stopParty()">עצור 🛑</button>
-</div>
-
-<div id="chat-container" id="chat">
-    <div class="welcome-msg">ChatLBZ כאן בשבילך! 🤖✨</div>
+<div id="chat">
+    <div class="welcome">ChatLBZ כאן בשבילך! 🤖✨</div>
 </div>
 
 <div id="input-area">
-    <button class="btn" style="background:#ff4d4d; color:white;" onclick="clearHistory()">🗑️</button>
-    <input type="text" id="user-input" placeholder="כתוב הודעה..." onkeydown="if(event.key==='Enter') sendMessage()">
-    <button class="btn" style="background:#0044ff; color:white;" onclick="sendMessage()">שלח 🚀</button>
+    <input type="text" id="userInput" placeholder="כתוב משהו כאן..." onkeypress="if(event.key==='Enter') startSend()">
+    <button onclick="startSend()">שלח 🚀</button>
 </div>
 
 <script>
-    const chatBox = document.getElementById("chat-container");
-    let partyInt;
+    function startSend() {
+        const input = document.getElementById('userInput');
+        const chat = document.getElementById('chat');
+        const text = input.value.trim();
 
-    const dict = {
-        "שלום": "אהלן אחי! איך אני יכול לעזור? 😊",
-        "מה קורה": "הכל דבש, מה אצלך? ⚡",
-        "מי אתה": "אני ChatLBZ, הבוט של Kavibz26 האלוף! 👑",
-        "בדיחה": "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים! 😂💀",
-        "מסיבה": "יאללה בלגןןן! 🎉🌈🕺",
-        "שבת שלום": "שבת שלום ומבורכת לכל המשפחה! ❤️🕯️",
-        "תודה": "בכיף אחי! 🙌✨"
-    };
+        if (text === "") return;
 
-    function addMsg(text, type) {
-        const d = document.createElement("div");
-        d.className = "message " + type;
-        d.innerText = (type === "bot" ? "ChatLBZ: " : "") + text;
-        chatBox.appendChild(d);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        
-        // שמירה להיסטוריה
-        const history = localStorage.getItem("lbz_history") || "";
-        localStorage.setItem("lbz_history", history + d.outerHTML);
-    }
+        // הודעת משתמש
+        const userDiv = document.createElement('div');
+        userDiv.className = 'msg user';
+        userDiv.innerText = text;
+        chat.appendChild(userDiv);
 
-    function sendMessage() {
-        const inp = document.getElementById("user-input");
-        const val = inp.value.trim();
-        if (val === "") return;
+        input.value = ""; // ניקוי התיבה
+        chat.scrollTop = chat.scrollHeight;
 
-        addMsg(val, "user");
-        inp.value = "";
-
-        let reply = "מעניין מאוד... ספר לי עוד! 🤔";
-        const t = val.toLowerCase();
-
-        for (let key in dict) {
-            if (t.includes(key)) { reply = dict[key]; break; }
-        }
-
-        if (t.includes("מסיבה")) startParty();
-        if (t.includes("די") || t.includes("עצור")) { stopParty(); reply = "נרגענו... 💡"; }
-
-        setTimeout(() => addMsg(reply, "bot"), 500);
-    }
-
-    function startParty() {
-        if (partyInt) return;
-        document.getElementById("stop-party").style.display = "block";
-        partyInt = setInterval(() => {
-            const colors = ["#ff9a9e", "#a1c4fd", "#84fab0", "#fccb90", "#e0c3fc"];
-            document.body.style.background = colors[Math.floor(Math.random() * colors.length)];
+        // תגובת בוט פשוטה
+        setTimeout(() => {
+            const botDiv = document.createElement('div');
+            botDiv.className = 'msg bot';
+            
+            let reply = "וואלה, מעניין! 😊";
+            if (text.includes("שלום")) reply = "אהלן אחי! מה המצב? 👋";
+            if (text.includes("מסיבה")) reply = "יאללה מסיבה! 🎉 (תכתוב 'די' להפסיק)";
+            
+            botDiv.innerText = "ChatLBZ: " + reply;
+            chat.appendChild(botDiv);
+            chat.scrollTop = chat.scrollHeight;
         }, 500);
     }
-
-    function stopParty() {
-        clearInterval(partyInt); partyInt = null;
-        document.getElementById("stop-party").style.display = "none";
-        document.body.style.background = "linear-gradient(135deg, #72edda 0%, #72e97e 100%)";
-    }
-
-    function clearHistory() {
-        if(confirm("למחוק הכל? 🗑️")) {
-            localStorage.removeItem("lbz_history");
-            location.reload();
-        }
-    }
-
-    // טעינת היסטוריה בבטחה
-    window.onload = () => {
-        const history = localStorage.getItem("lbz_history");
-        if (history) chatBox.innerHTML += history;
-    };
 </script>
+
 </body>
 </html>
