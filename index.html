@@ -3,62 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ - DEVER AI</title>
+    <title>ChatLBZ - DEVER AI Mega</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; display: flex; flex-direction: column; height: 100vh; margin: 0; color: #333; }
-        #header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        #header h1 { margin: 0; font-size: 1.2rem; color: #444; }
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-color: #ffffff; }
-        .message { max-width: 80%; margin: 12px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; }
-        .user { align-self: flex-end; background-color: #f0f0f0; color: #222; border: 1px solid #e0e0e0; }
-        .bot { align-self: flex-start; background-color: transparent; color: #333; }
-        .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; margin-bottom: 4px; }
-        #input-area { padding: 20px; background: #fff; border-top: 1px solid #eee; }
-        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
-        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 1rem; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #ffffff; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+        #header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
+        .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; }
+        .user { align-self: flex-end; background-color: #f0f0f0; color: #222; }
+        .bot { align-self: flex-start; color: #333; }
+        .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; }
+        #input-area { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        input { flex: 1; padding: 14px; border: 1px solid #ddd; border-radius: 24px; outline: none; }
         .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; }
         .btn-send { background-color: #0084ff; color: white; }
-        .btn-clear { background-color: #ff4d4d; color: white; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div id="header">
-    <h1>ChatLBZ - DEVER</h1>
-    <button class="btn btn-clear" onclick="clearChat()">מחק שיחה 🗑️</button>
+    <h1>DEVER AI Mega</h1>
+    <button class="btn" style="background:#ff4d4d; color:white;" onclick="clearChat()">מחק שיחה</button>
 </div>
 
 <div id="chat-container">
-    <div class="message bot" id="welcome-msg">שלום! אני DEVER. איך אפשר לעזור היום?</div>
+    <div class="message bot" id="welcome-msg">שלום! אני DEVER. המוח שלי עכשיו יכול להכיל אלפי מילים. נסה אותי!</div>
 </div>
 
 <div id="input-area">
-    <div class="input-wrapper">
-        <input type="text" id="user-input" placeholder="כתוב הודעה..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button class="btn btn-send" onclick="sendMessage()">שלח</button>
-    </div>
+    <input type="text" id="user-input" placeholder="כתוב משהו..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button class="btn btn-send" onclick="sendMessage()">שלח</button>
 </div>
 
 <script>
-    // בדיקה אם יש שם שמור במערכת
     let userName = localStorage.getItem("userName") || "";
-
-    if (userName) {
-        document.getElementById("welcome-msg").innerText = "שלום " + userName + "! טוב לראות אותך שוב. איך אפשר לעזור?";
-    }
+    if (userName) document.getElementById("welcome-msg").innerText = "שלום " + userName + ", מוכן להתחיל?";
 
     function sendMessage() {
         const input = document.getElementById("user-input");
         const text = input.value.trim();
         if (text === "") return;
-
         addMessage(text, "user");
         input.value = "";
-
-        setTimeout(() => {
-            const response = reply(text);
-            addMessage(response, "bot");
-        }, 600);
+        setTimeout(() => { addMessage(reply(text), "bot"); }, 500);
     }
 
     function addMessage(text, sender) {
@@ -70,44 +56,48 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    function clearChat() {
-        if (confirm("למחוק את כל השיחה?")) {
-            document.getElementById("chat-container").innerHTML = '<div class="message bot">השיחה אותחלה.</div>';
-        }
-    }
+    function clearChat() { if(confirm("למחוק?")) location.reload(); }
 
     function reply(text) {
         const t = text.toLowerCase().trim();
 
-        // פקודה לשמירת שם
-        if (t.startsWith("קוראים לי ") || t.startsWith("השם שלי הוא ")) {
-            userName = text.replace("קוראים לי ", "").replace("השם שלי הוא ", "");
+        // שמירת שם
+        if (t.includes("קוראים לי")) {
+            userName = text.split("לי ").pop();
             localStorage.setItem("userName", userName);
-            return "נעים מאוד, " + userName + "! אני אזכור את זה.";
-        }
-        
-        if (t === "מה השם שלי") {
-            return userName ? "קוראים לך " + userName + "!" : "עדיין לא סיפרת לי איך קוראים לך...";
+            return "נעים מאוד " + userName + "!";
         }
 
-        const dictionary = {
-            "שלום": "אהלן! איזה כיף שחזרת.",
-            "היי": "היי! איך הולך היום?",
-            "מה קורה": "הכל מעולה, מה איתך?",
-            "תודה": "בשמחה! תמיד כאן.",
-            "מי אתה": "אני DEVER, עוזר ה-AI שלך.",
-            "בוס": "ברור, אתה הבוס! 😎",
-            "עזרה": "אני כאן! מה השאלה שלך?",
-            "hello": "Hi! How can I help?",
-            "hi": "Hey there!",
-            "how are you": "I'm doing great, thanks!"
+        // --- מאגרי מילים ענקיים (כאן תוכל להוסיף אלפי מילים) ---
+        const data = {
+            animals: ["כלב", "חתול", "פיל", "אריה", "נמר", "דב", "נחש", "ציפור", "עכבר", "סוס", "חמור", "גמל", "dog", "cat", "lion", "tiger", "bear", "snake", "bird", "mouse"],
+            colors: ["אדום", "כחול", "ירוק", "צהוב", "כתום", "סגול", "ורוד", "שחור", "לבן", "חום", "אפור", "red", "blue", "green", "yellow", "orange", "purple", "pink", "black", "white"],
+            food: ["פיצה", "המבורגר", "פסטה", "סלט", "לחם", "תפוח", "בננה", "גלידה", "שוקולד", "pizza", "burger", "pasta", "salad", "bread", "apple", "banana", "ice cream"],
+            tech: ["מחשב", "טלפון", "אינטרנט", "קוד", "אתר", "מקלדת", "עכבר", "computer", "phone", "internet", "code", "website", "keyboard"],
+            feelings: ["שמח", "עצוב", "עייף", "מרוגש", "כועס", "מפחד", "happy", "sad", "tired", "excited", "angry", "scared"]
         };
 
-        if (dictionary[t]) return dictionary[t];
-        for (let key in dictionary) {
-            if (t.includes(key)) return dictionary[key];
-        }
-        return "מעניין... תוכל להסביר עוד על '" + text + "'?";
+        // לוגיקת זיהוי קטגוריות
+        if (data.animals.some(word => t.includes(word))) return "חיות הן יצורים מדהימים, במיוחד " + t + "!";
+        if (data.colors.some(word => t.includes(word))) return "זה צבע ממש יפה!";
+        if (data.food.some(word => t.includes(word))) return "וואי, עשית לי חשבון לאכול " + t + "... אבל אני רק בוט.";
+        if (data.tech.some(word => t.includes(word))) return "טכנולוגיה זה התחום שלי! אני אוהב לדבר על זה.";
+        if (data.feelings.some(word => t.includes(word))) return "אני מבין אותך. רגשות זה דבר חשוב.";
+
+        // מילון תשובות ישירות
+        const dict = {
+            "שלום": "אהלן! איך הולך?",
+            "מה קורה": "הכל מעולה, מה איתך?",
+            "מי אתה": "אני DEVER, הבינה המלאכותית שלך.",
+            "hello": "Hi! How can I help?",
+            "thanks": "You're welcome!",
+            "בדיחה": "למה המחשב הלך לרופא? כי היה לו וירוס!",
+            "מה השם שלי": userName ? "השם שלך הוא " + userName : "עוד לא אמרת לי..."
+        };
+
+        for (let key in dict) { if (t.includes(key)) return dict[key]; }
+
+        return "מעניין... '" + text + "' זה משהו חדש. תוכל להסביר עוד?";
     }
 </script>
 </body>
