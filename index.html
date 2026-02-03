@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ - DEVER AI Ultra</title>
-    <meta name="description" content="צ'אט בוט חכם בעברית ובאנגלית - DEVER AI. בואו לדבר עם הבינה המלאכותית החדשה!">
-<meta name="keywords" content="צ'אט, בוט, בינה מלאכותית, DEVER, ChatLBZ, AI Hebrew">
-<meta name="author" content="השם שלך">
+    
+    <title>ChatLBZ - DEVER AI: צ'אט בוט חכם בעברית</title>
+    <meta name="description" content="דברו עם DEVER, בינה מלאכותית מתקדמת בעברית ובאנגלית. הצ'אט בוט הכי חכם שבניתי!">
+    <meta name="keywords" content="צ'אט בוט, בינה מלאכותית, DEVER, ChatLBZ, AI Hebrew, פיתוח אתרים">
+    <meta name="author" content="Kavibz26">
+
+    <meta property="og:title" content="ChatLBZ - DEVER AI">
+    <meta property="og:description" content="בואו לדבר עם הבוט החדש שלי!">
+    <meta property="og:url" content="https://kavibz26.github.io/ChatLBZ/">
+    <meta property="og:type" content="website">
+
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; display: flex; flex-direction: column; height: 100vh; margin: 0; color: #333; }
         #header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
@@ -32,7 +39,7 @@
 </div>
 
 <div id="chat-container">
-    <div class="message bot" id="welcome-msg">שלום! אני DEVER. המוח שלי מעודכן עם אלפי מילים וקטגוריות. נסה אותי!</div>
+    <div class="message bot" id="welcome-msg">שלום! אני DEVER. המוח שלי מעודכן ומוכן לגוגל. על מה נדבר?</div>
 </div>
 
 <div id="input-area">
@@ -44,7 +51,7 @@
 
 <script>
     let userName = localStorage.getItem("userName") || "";
-    if (userName) document.getElementById("welcome-msg").innerText = "שלום " + userName + "! מה נלמד היום?";
+    if (userName) document.getElementById("welcome-msg").innerText = "שלום " + userName + "! איך אפשר לעזור היום?";
 
     function sendMessage() {
         const input = document.getElementById("user-input");
@@ -73,59 +80,40 @@
     function reply(text) {
         const t = text.toLowerCase().trim();
 
-        // שמירת שם משתמש
         if (t.includes("קוראים לי") || t.includes("השם שלי הוא")) {
             userName = text.replace("קוראים לי", "").replace("השם שלי הוא", "").trim();
             localStorage.setItem("userName", userName);
-            return "נעים מאוד, " + userName + "! אני אזכור את זה.";
+            return "נעים מאוד, " + userName + "! עכשיו אני מכיר אותך.";
         }
 
-        // --- מאגרי הנתונים הגדולים (Arrays) ---
         const data = {
-            animals: ["כלב", "חתול", "פיל", "אריה", "נמר", "דב", "נחש", "ציפור", "עכבר", "סוס", "חמור", "גמל", "ארנב", "כריש", "לוויתן", "נמלה", "דבורה", "פרפר", "dog", "cat", "lion", "tiger", "bear", "snake", "bird", "mouse", "shark", "whale", "rabbit"],
-            colors: ["אדום", "כחול", "ירוק", "צהוב", "כתום", "סגול", "ורוד", "שחור", "לבן", "חום", "אפור", "תכלת", "זהב", "כסף", "red", "blue", "green", "yellow", "orange", "purple", "pink", "black", "white", "grey", "gold", "silver"],
-            food: ["פיצה", "המבורגר", "פסטה", "סלט", "לחם", "אורז", "בשר", "דג", "מרק", "עוגה", "pizza", "burger", "pasta", "salad", "bread", "rice", "cake", "meat", "fish"],
-            fruits: ["תפוח", "בננה", "תפוז", "ענבים", "אבטיח", "מלון", "אפרסק", "תות", "אגס", "לימון", "apple", "banana", "orange", "grapes", "watermelon", "melon", "peach", "strawberry", "pear", "lemon"],
-            countries: ["ישראל", "ארצות הברית", "צרפת", "אנגליה", "איטליה", "גרמניה", "ספרד", "יפן", "סין", "תאילנד", "יוון", "israel", "usa", "france", "italy", "japan", "china", "spain", "greece"],
-            jobs: ["רופא", "מורה", "מהנדס", "מתכנת", "שוטר", "טבח", "נהג", "זמר", "שחקן", "עורך דין", "doctor", "teacher", "engineer", "programmer", "pilot", "driver", "singer", "actor", "lawyer"],
-            family: ["אבא", "אמא", "אח", "אחות", "סבא", "סבתא", "דוד", "דודה", "בן", "בת", "father", "mother", "brother", "sister", "grandpa", "grandma"],
-            tech: ["מחשב", "טלפון", "אינטרנט", "קוד", "אתר", "מקלדת", "עכבר", "מסך", "אפליקציה", "יוטיוב", "גוגל", "computer", "phone", "internet", "code", "website", "keyboard", "screen", "app", "google"],
-            objects: ["שולחן", "כיסא", "מיטה", "מנורה", "טלוויזיה", "מקרר", "חלון", "דלת", "ספר", "תיק", "שעון", "table", "chair", "bed", "lamp", "tv", "fridge", "window", "door", "book", "bag", "clock"],
-            languages: ["עברית", "אנגלית", "ערבית", "רוסית", "צרפתית", "ספרדית", "גרמנית", "איטלקית", "יפנית", "סינית", "hebrew", "english", "arabic", "russian", "french", "spanish", "german", "italian", "japanese", "chinese"],
-            feelings: ["שמח", "עצוב", "עייף", "מרוגש", "כועס", "מפחד", "חושש", "מאוהב", "happy", "sad", "tired", "excited", "angry", "scared", "love"]
+            animals: ["כלב", "חתול", "פיל", "אריה", "נמר", "דב", "נחש", "ציפור", "עכבר", "סוס", "dog", "cat", "lion", "tiger", "bear", "bird"],
+            colors: ["אדום", "כחול", "ירוק", "צהוב", "כתום", "סגול", "ורוד", "שחור", "לבן", "red", "blue", "green", "yellow", "pink", "black"],
+            food: ["פיצה", "המבורגר", "פסטה", "סלט", "לחם", "אורז", "עוגה", "pizza", "burger", "pasta", "salad", "cake"],
+            countries: ["ישראל", "צרפת", "איטליה", "יפן", "סין", "יוון", "israel", "france", "italy", "japan", "greece"],
+            tech: ["מחשב", "טלפון", "אינטרנט", "קוד", "אתר", "computer", "phone", "internet", "code", "website"],
+            languages: ["עברית", "אנגלית", "ערבית", "רוסית", "צרפתית", "hebrew", "english", "arabic", "french"]
         };
 
-        // בדיקה חכמה לפי קטגוריות
         if (data.animals.some(word => t.includes(word))) return "חיות הן יצורים מדהימים, במיוחד " + t + "!";
         if (data.colors.some(word => t.includes(word))) return "זה צבע ממש יפה!";
         if (data.food.some(word => t.includes(word))) return "וואי, " + t + " נשמע ממש טעים!";
-        if (data.fruits.some(word => t.includes(word))) return "פירות זה בריא מאוד, במיוחד " + t + "!";
         if (data.countries.some(word => t.includes(word))) return t + " זה מקום מרתק לבקר בו.";
-        if (data.jobs.some(word => t.includes(word))) return "זה מקצוע מאוד חשוב ומעניין.";
-        if (data.family.some(word => t.includes(word))) return "משפחה זה הדבר הכי חשוב שיש.";
         if (data.tech.some(word => t.includes(word))) return "טכנולוגיה זה התחום שלי! אני אוהב את " + t + ".";
-        if (data.objects.some(word => t.includes(word))) return t + " זה חפץ שימושי מאוד בבית!";
         if (data.languages.some(word => t.includes(word))) return t + " היא שפה מרתקת!";
-        if (data.feelings.some(word => t.includes(word))) return "אני מבין אותך. זה טבעי להרגיש " + t + ".";
 
-        // מילון תגובות ישירות
         const dict = {
             "שלום": "אהלן! איך הולך?",
             "מה קורה": "אצלי הכל מצוין, מה איתך?",
             "מי אתה": "אני DEVER, הבינה המלאכותית שאתה בנית!",
             "בדיחה": "למה המחשב הלך לרופא? כי היה לו וירוס!",
-            "עזרה": "אני יכול לדבר איתך על כמעט הכל: חיות, מדינות, אוכל ועוד!",
             "מה השם שלי": userName ? "השם שלך הוא " + userName : "עוד לא אמרת לי איך קוראים לך...",
             "hello": "Hi! How can I help you?",
-            "thanks": "You're very welcome!",
-            "bye": "Goodbye! See you soon."
+            "thanks": "You're very welcome!"
         };
 
-        for (let key in dict) {
-            if (t.includes(key)) return dict[key];
-        }
-
-        return "מעניין... '" + text + "' זה משהו חדש עבורי. ספר לי עוד?";
+        for (let key in dict) { if (t.includes(key)) return dict[key]; }
+        return "מעניין... '" + text + "' זה משהו חדש. ספר לי עוד?";
     }
 </script>
 </body>
