@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ - DEVER AI Mega Party</title>
+    <title>ChatLBZ - הבוט החכם שלי</title>
+    
     <style>
-        /* רקע קנבה - טורקיז וירוק */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: linear-gradient(135deg, #72edda 0%, #72e97e 100%);
@@ -20,7 +20,8 @@
         .message { max-width: 80%; margin: 10px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .user { align-self: flex-end; background-color: #ffffff; color: #222; }
         .bot { align-self: flex-start; background-color: rgba(255,255,255,0.4); color: #333; border: 1px solid rgba(255,255,255,0.5); }
-        .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; }
+        /* שינוי השם שמופיע מעל הודעות הבוט */
+        .bot::before { content: "ChatLBZ: "; font-weight: bold; color: #0084ff; display: block; }
 
         #input-area { padding: 20px; background: rgba(255,255,255,0.9); border-top: 1px solid #eee; }
         .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
@@ -34,7 +35,7 @@
 <body id="main-body">
 
 <div id="header">
-    <h1>DEVER Mega & Party</h1>
+    <h1>ChatLBZ AI</h1>
     <div>
         <button id="stop-party-btn" class="btn" onclick="stopParty()">עצור מסיבה 🛑</button>
         <button class="btn" style="background:#ff4d4d; color:white;" onclick="location.reload()">איפוס</button>
@@ -42,12 +43,12 @@
 </div>
 
 <div id="chat-container">
-    <div class="message bot">היי! המילון הענק בפנים. תגיד "מסיבה" כדי להתחיל ו"מספיק" כדי לעצור! 🎉</div>
+    <div class="message bot">שלום! אני ChatLBZ. המילון שלי מוכן ואני זמין לשיחה או למסיבה! 🎉</div>
 </div>
 
 <div id="input-area">
     <div class="input-wrapper">
-        <input type="text" id="user-input" placeholder="כתוב הודעה..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <input type="text" id="user-input" placeholder="כתוב הודעה ל-ChatLBZ..." onkeypress="if(event.key==='Enter') sendMessage()">
         <button class="btn btn-send" onclick="sendMessage()">שלח</button>
     </div>
 </div>
@@ -99,17 +100,15 @@
     function reply(text) {
         const t = text.toLowerCase().trim();
 
-        // שליטה במסיבה
         if (t.includes("מסיבה")) {
             startParty();
             return "יאללה מסיבה! 🎉 תגיד 'מספיק' כשנמאס לך.";
         }
         if (t.includes("מספיק") || t.includes("די")) {
             stopParty();
-            return "אוקיי, נרגענו. חזרנו לשגרה.";
+            return "אוקיי, ChatLBZ חוזר למצב רגוע.";
         }
 
-        // --- המילון הענק ---
         const data = {
             animals: ["כלב", "חתול", "פיל", "אריה", "נמר", "דב", "נחש", "ציפור", "סוס", "dog", "cat", "lion", "bird"],
             colors: ["אדום", "כחול", "ירוק", "צהוב", "ורוד", "שחור", "לבן", "red", "blue", "green", "pink"],
@@ -119,7 +118,6 @@
             languages: ["עברית", "אנגלית", "ערבית", "רוסית", "צרפתית", "hebrew", "english", "arabic"]
         };
 
-        // בדיקה לפי קטגוריות
         if (data.animals.some(word => t.includes(word))) return "חיות הן יצורים מדהימים, במיוחד " + t + "!";
         if (data.colors.some(word => t.includes(word))) return "זה צבע ממש יפה!";
         if (data.food.some(word => t.includes(word))) return "וואי, " + t + " נשמע טעים!";
@@ -127,6 +125,17 @@
         if (data.tech.some(word => t.includes(word))) return "טכנולוגיה זה התחום שלי!";
         if (data.languages.some(word => t.includes(word))) return t + " היא שפה מעניינת מאוד.";
 
-        // תגובות ישירות
         const dict = {
-            "שלום": "אהלן אחי! איך ה
+            "שלום": "אהלן אחי! איך הולך עם ChatLBZ?",
+            "מה קורה": "הכל מעולה, ChatLBZ כאן בשבילך!",
+            "מי אתה": "אני ChatLBZ, הבינה המלאכותית החדשה שלך.",
+            "בדיחה": "למה המחשב הלך לרופא? כי היה לו וירוס!",
+            "תודה": "בכיף!"
+        };
+
+        for (let key in dict) { if (t.includes(key)) return dict[key]; }
+        return "מעניין... '" + text + "' זה משהו ש-ChatLBZ עדיין לומד.";
+    }
+</script>
+</body>
+</html>ר
