@@ -44,36 +44,93 @@
     <button onclick="send()">Send</button>
   </div>
 
-  <script>
-   function reply(text) {
+  function reply(text) {
     const t = text.toLowerCase().trim();
     
     const dictionary = {
-        // עברית
-        "שלום": "שלום! איך אני יכול לעזור?",
-        "היי": "היי! איזה כיף לראות אותך.",
-        "מה קורה": "הכל מצוין, מה איתך?",
-        "מה נשמע": "בסדר גמור, תודה ששאלת!",
-        "בוקר טוב": "בוקר אור! מוכן ליום חדש?",
-        "לילה טוב": "לילה טוב וחלומות פז! 🌙",
-        "תודה": "בשמחה, תמיד כאן בשבילך!",
-        "בבקשה": "אין בעיה!",
-        "מי אתה": "אני DEVER, העוזר האישי שלך.",
-        "עזרה": "אני כאן! מה אתה צריך?",
-        "מגניב": "נכון? גם אני חושב ככה!",
-        "בוס": "ברור, אתה הבוס! 😎",
+        // --- עברית: ברכות ונימוסים ---
+        "שלום": "שלום שלום! איזה כיף שקפצת לבקר.",
+        "היי": "היי! איך אני יכול לעזור היום?",
+        "מה קורה": "הכל מעולה, מה איתך?",
+        "מה נשמע": "אצלי הכל דבש, מקווה שגם אצלך!",
+        "בוקר טוב": "בוקר אור! שיהיה יום מוצלח ומלא הספק.",
+        "צהריים טובים": "צהריים טובים! אכלת כבר משהו?",
+        "ערב טוב": "ערב טוב! זמן להירגע קצת, לא?",
+        "לילה טוב": "לילה טוב, חלומות פז!",
+        "תודה": "בשמחה! תמיד כאן בשבילך.",
+        "בבקשה": "אין על מה, בכיף!",
+        "סליחה": "הכל טוב, לא קרה כלום.",
+        "נעים מאוד": "גם לי נעים מאוד! אני DEVER.",
+        "הייתי": "ספר לי עוד על החוויה שלך.",
+        "להתראות": "ביי ביי, נשתמע בקרוב!",
         
-        // אנגלית
-        "hello": "Hi there! How can I help you?",
-        "hi": "Hey! Nice to meet you.",
-        "how are you": "I'm doing great! How about you?",
-        "thanks": "You're welcome!",
-        "who are you": "I am DEVER, your AI assistant.",
-        "help": "I'm here! What do you need?",
-        "cool": "Totally agree!",
-        "yes": "Awesome!",
-        "no": "Got it. No problem."
-    };
+        // --- עברית: שאלות ומידע ---
+        "מי אתה": "אני DEVER, עוזר בינה מלאכותית שבנית במו ידיך!",
+        "מה אתה": "אני בוט צ'אט חכם (יחסית 😉) שחי בתוך קוד HTML.",
+        "איפה אתה": "אני גר בשרתים של GitHub, אבל הלב שלי כאן אצלך.",
+        "עזרה": "אני יכול לענות על שאלות, לספר בדיחות או פשוט להקשיב.",
+        "מה השעה": "אני לא מחובר לשעון חי, אבל כדאי להציץ בפינה של המסך.",
+        "בן כמה אתה": "נולדתי ברגע שסיימת לכתוב את הקוד שלי!",
+        
+        // --- עברית: רגשות ותגובות ---
+        "שמח": "איזה יופי! אני תמיד שמח לשמוע דברים טובים.",
+        "עצוב": "מצטער לשמוע... אולי בדיחה תעזור?",
+        "מגניב": "לגמרי מגניב! אנחנו צוות טוב.",
+        "נכון": "בדיוק, הוצאת לי את המילים מהפה.",
+        "אולי": "החיים מלאים באפשרויות, לא?",
+        "חחח": "חחחחח, הצחקת אותי!",
+        "משעמם": "משעמם? בוא נכתוב עוד קוד!",
+        "אוהב": "גם אני מחבב אותך מאוד!",
+        
+        // --- ENGLISH: Greetings & Manners ---
+        "hello": "Hello! It's a pleasure to speak with you.",
+        "hi": "Hi there! How's your day going?",
+        "hey": "Hey! What's up?",
+        "how are you": "I'm doing fantastic, thank you for asking!",
+        "good morning": "Good morning! Time to grab some coffee and code.",
+        "good afternoon": "Good afternoon! Hope you're having a great day.",
+        "good evening": "Good evening! Ready to wind down?",
+        "good night": "Good night! See you in the morning.",
+        "thanks": "You're very welcome!",
+        "thank you": "My pleasure! Happy to help.",
+        "please": "You're so polite, I'll do my best!",
+        "sorry": "No need to apologize.",
+        "bye": "Goodbye! Come back soon.",
+        "welcome": "Welcome to my chat! I am DEVER.",
+        
+        // --- ENGLISH: Questions & Identity ---
+        "who are you": "I am DEVER, your personal AI assistant.",
+        "what are you": "I'm a JavaScript-based chatbot created by you!",
+        "where are you": "I'm living inside your browser right now.",
+        "help": "I'm here! Tell me what's on your mind.",
+        "age": "I'm timeless! Or at least as old as this website.",
+        "name": "My name is DEVER. Nice to meet you!",
+        
+        // --- ENGLISH: Feelings & Random ---
+        "happy": "That makes me happy too!",
+        "sad": "I'm sorry. I'm here if you want to talk.",
+        "cool": "Right?! Engineering is awesome.",
+        "awesome": "You are awesome!",
+        "lol": "Haha! That was funny.",
+        "bored": "Let's build something new then!",
+        "yes": "I agree!",
+        "no": "Fair enough. Let's try something else.",
+        "maybe": "Decision making is hard, I get it.",
+        "wow": "Impressive, isn't it?",
+        "good": "Glad to hear that!",
+        "bad": "I hope things get better soon."
+   
+  <script> };
+
+    // בדיקה
+    if (dictionary[t]) return dictionary[t];
+
+    for (let key in dictionary) {
+        if (t.includes(key)) return dictionary[key];
+    }
+
+    return "מעניין... '" + text + "' זה משהו חדש בשבילי. תוכל להסביר לי?";
+}
 
     if (dictionary[t]) {
         return dictionary[t];
