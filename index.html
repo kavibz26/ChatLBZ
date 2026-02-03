@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DEVER</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+    #app {
+      width: 100%;
+      max-width: 500px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background: #22c55e;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .msg {
+      margin: 10px 0;
+    }
+    .ai {
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>DEVER 🤖</h1>
+    <div id="chat"></div>
+    <input id="input" placeholder="Type in Hebrew or English..." />
+    <button onclick="send()">Send</button>
+  </div>
+
+  <script>
+    function reply(text) {
+      const t = text.toLowerCase();
+      if (t.includes("שלום") || t.includes("hello"))
+        return "Hey 👋 I'm DEVER.";
+      if (t.includes("מי אתה") || t.includes("who are you"))
+        return "I'm DEVER – your AI assistant.";
+      if (t.includes("בוס") || t.includes("boss"))
+        return "Of course. You're the boss 😎";
+      return "Got it. Tell me more.";
+    }
+
+    function send() {
+      const input = document.getElementById("input");
+      const chat = document.getElementById("chat");
+      if (!input.value) return;
+
+      chat.innerHTML += `<div class="msg"><b>You:</b> ${input.value}</div>`;
+      chat.innerHTML += `<div class="msg ai"><b>DEVER:</b> ${reply(input.value)}</div>`;
+      input.value = "";
+    }
+  </script>
+</body>
+</html>
