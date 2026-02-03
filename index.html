@@ -45,16 +45,48 @@
   </div>
 
   <script>
-    function reply(text) {
-      const t = text.toLowerCase();
-      if (t.includes("שלום") || t.includes("hello"))
-        return "Hey 👋 I'm DEVER.";
-      if (t.includes("מי אתה") || t.includes("who are you"))
-        return "I'm DEVER – your AI assistant.";
-      if (t.includes("בוס") || t.includes("boss"))
-        return "Of course. You're the boss 😎";
-      return "Got it. Tell me more.";
+   function reply(text) {
+    const t = text.toLowerCase().trim();
+    
+    const dictionary = {
+        // עברית
+        "שלום": "שלום! איך אני יכול לעזור?",
+        "היי": "היי! איזה כיף לראות אותך.",
+        "מה קורה": "הכל מצוין, מה איתך?",
+        "מה נשמע": "בסדר גמור, תודה ששאלת!",
+        "בוקר טוב": "בוקר אור! מוכן ליום חדש?",
+        "לילה טוב": "לילה טוב וחלומות פז! 🌙",
+        "תודה": "בשמחה, תמיד כאן בשבילך!",
+        "בבקשה": "אין בעיה!",
+        "מי אתה": "אני DEVER, העוזר האישי שלך.",
+        "עזרה": "אני כאן! מה אתה צריך?",
+        "מגניב": "נכון? גם אני חושב ככה!",
+        "בוס": "ברור, אתה הבוס! 😎",
+        
+        // אנגלית
+        "hello": "Hi there! How can I help you?",
+        "hi": "Hey! Nice to meet you.",
+        "how are you": "I'm doing great! How about you?",
+        "thanks": "You're welcome!",
+        "who are you": "I am DEVER, your AI assistant.",
+        "help": "I'm here! What do you need?",
+        "cool": "Totally agree!",
+        "yes": "Awesome!",
+        "no": "Got it. No problem."
+    };
+
+    if (dictionary[t]) {
+        return dictionary[t];
     }
+
+    for (let key in dictionary) {
+        if (t.includes(key)) {
+            return dictionary[key];
+        }
+    }
+
+    return "מעניין... לא בטוח שהבנתי את '" + text + "'. תוכל להסביר אחרת?";
+}
 
     function send() {
       const input = document.getElementById("input");
