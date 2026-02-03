@@ -5,30 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatLBZ - DEVER</title>
     <style>
-        /* עיצוב נקי ולבן כמו Gemini/ChatGPT */
+        /* עיצוב לבן ומודרני */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; display: flex; flex-direction: column; height: 100vh; margin: 0; color: #333; }
-        
         #header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; }
         #header h1 { margin: 0; font-size: 1.2rem; color: #444; }
-        
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-color: #fff; }
-        
-        .message { max-width: 80%; margin: 12px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; position: relative; }
-        .user { align-self: flex-end; background-color: #f4f4f4; color: #222; border: 1px solid #e0e0e0; }
-        .bot { align-self: flex-start; background-color: transparent; color: #333; border: none; padding-right: 0; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background-color: #ffffff; }
+        .message { max-width: 80%; margin: 12px 0; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 1rem; }
+        .user { align-self: flex-end; background-color: #f0f0f0; color: #222; border: 1px solid #e0e0e0; }
+        .bot { align-self: flex-start; background-color: transparent; color: #333; font-weight: 400; }
         .bot::before { content: "DEVER: "; font-weight: bold; color: #0084ff; display: block; margin-bottom: 4px; }
-
         #input-area { padding: 20px; background: #fff; border-top: 1px solid #eee; }
-        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; align-items: center; position: relative; }
-        
-        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 1rem; transition: border 0.3s; }
-        input:focus { border-color: #0084ff; }
-        
-        .btn { padding: 10px 18px; border-radius: 20px; cursor: pointer; border: none; font-weight: bold; transition: 0.2s; }
-        .btn-send { background-color: #0084ff; color: white; margin-right: 10px; }
-        .btn-send:hover { background-color: #0073e6; }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; }
+        input { flex: 1; padding: 14px 20px; border: 1px solid #ddd; border-radius: 24px; outline: none; font-size: 1rem; }
+        .btn { padding: 10px 20px; border-radius: 24px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-send { background-color: #0084ff; color: white; }
         .btn-clear { background-color: #ff4d4d; color: white; font-size: 0.8rem; }
-        .btn-clear:hover { background-color: #cc0000; }
     </style>
 </head>
 <body>
@@ -39,21 +30,17 @@
 </div>
 
 <div id="chat-container">
-    <div class="message bot">היי! אני DEVER. איך אני יכול לעזור לך היום?</div>
+    <div class="message bot">היי! אני DEVER. איך אפשר לעזור היום?</div>
 </div>
 
 <div id="input-area">
     <div class="input-wrapper">
-        <input type="text" id="user-input" placeholder="הקלד הודעה כאן..." onkeypress="handleKey(event)">
+        <input type="text" id="user-input" placeholder="כתוב הודעה..." onkeypress="if(event.key==='Enter') sendMessage()">
         <button class="btn btn-send" onclick="sendMessage()">שלח</button>
     </div>
 </div>
 
 <script>
-    function handleKey(e) {
-        if (e.key === 'Enter') sendMessage();
-    }
-
     function sendMessage() {
         const input = document.getElementById("user-input");
         const text = input.value.trim();
@@ -78,33 +65,32 @@
     }
 
     function clearChat() {
-        if (confirm("האם אתה בטוח שברצונך למחוק את כל השיחה?")) {
-            const container = document.getElementById("chat-container");
-            container.innerHTML = '<div class="message bot">השיחה נמחקה. איך אפשר לעזור שוב?</div>';
+        if (confirm("למחוק את כל השיחה?")) {
+            document.getElementById("chat-container").innerHTML = '<div class="message bot">השיחה נמחקה.</div>';
         }
     }
 
     function reply(text) {
         const t = text.toLowerCase().trim();
         const dictionary = {
-            "שלום": "שלום! איך אני יכול לעזור?",
-            "היי": "היי! איזה כיף לראות אותך.",
-            "מה קורה": "הכל מצוין, מה איתך?",
-            "בוקר טוב": "בוקר אור! מוכן ליום חדש?",
-            "תודה": "בשמחה, תמיד כאן בשבילך!",
-            "מי אתה": "אני DEVER, העוזר האישי שלך.",
-            "עזרה": "אני כאן! מה אתה צריך?",
+            "שלום": "אהלן! איזה כיף לראות אותך.",
+            "היי": "היי! איך היום שלך בינתיים?",
+            "מה קורה": "הכל מצוין, תודה ששאלת!",
+            "בוקר טוב": "בוקר אור ויום נפלא!",
+            "תודה": "בשמחה! תמיד כאן.",
+            "מי אתה": "אני DEVER, עוזר ה-AI שבנית בעצמך!",
+            "עזרה": "אני כאן! מה השאלה שלך?",
             "hello": "Hi there! How can I help?",
             "hi": "Hey! Nice to meet you.",
             "thanks": "You're welcome!",
-            "clear": "אתה יכול ללחוץ על הכפתור האדום למעלה כדי למחוק הכל!"
+            "how are you": "I'm doing great, thank you!"
         };
 
         if (dictionary[t]) return dictionary[t];
         for (let key in dictionary) {
             if (t.includes(key)) return dictionary[key];
         }
-        return "מעניין... תוכל לפרט קצת יותר?";
+        return "מעניין... '" + text + "' זה משהו חדש עבורי. תוכל להסביר עוד?";
     }
 </script>
 
