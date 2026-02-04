@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ Pro 🔵</title>
+    <title>ChatLBZ Ultra Dictionary 🔵</title>
     <style>
         :root { --primary: #0044ff; --bg: #72edda; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: background 0.5s; }
-        #header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .welcome { text-align: center; color: var(--primary); font-weight: bold; font-size: 22px; margin-bottom: 10px; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 15px; }
-        .msg { padding: 12px 18px; border-radius: 20px; max-width: 80%; font-size: 17px; line-height: 1.5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
-        .user { align-self: flex-end; background: white; border-bottom-right-radius: 2px; border-right: 5px solid var(--primary); }
-        .bot { align-self: flex-start; background: #e3f2fd; border-bottom-left-radius: 2px; border-left: 5px solid var(--primary); }
-        #input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; align-items: center; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: 0.5s; }
+        #header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: rgba(255,255,255,0.05); }
+        .welcome-card { text-align: center; color: var(--primary); font-weight: bold; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 10px; }
+        .msg { padding: 12px 18px; border-radius: 20px; max-width: 80%; font-size: 17px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .user { align-self: flex-end; background: white; border-right: 5px solid var(--primary); }
+        .bot { align-self: flex-start; background: #e3f2fd; border-left: 5px solid var(--primary); }
+        #input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
         input { flex: 1; padding: 14px 20px; border-radius: 30px; border: 1px solid #ccc; outline: none; font-size: 16px; }
-        .btn { padding: 10px 20px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn { padding: 10px 20px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; }
         .btn-send { background: var(--primary); color: white; }
         .btn-del { background: #ff4d4d; color: white; }
-        #party-ui { display: none; background: #333; color: white; padding: 5px 15px; border-radius: 10px; font-size: 14px; cursor: pointer; }
+        #party-tag { display: none; background: #333; color: white; padding: 5px 12px; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -26,18 +26,21 @@
 <div id="header">
     <div style="display: flex; align-items: center; gap: 10px;">
         <div style="width:40px; height:40px; background:var(--primary); border-radius:50%; color:white; display:flex; justify-content:center; align-items:center; font-weight:bold;">LBZ</div>
-        <h2 style="margin:0; font-size: 1.2rem; color: var(--primary);">ChatLBZ AI</h2>
+        <h2 style="margin:0; font-size: 1.1rem; color: var(--primary);">ChatLBZ Ultra AI</h2>
     </div>
-    <div id="party-ui" onclick="stopP()">עצור מסיבה 🛑</div>
-    <button class="btn btn-del" onclick="clearAll()">מחק 🗑️</button>
+    <div id="party-tag" onclick="stopP()">עצור 🛑</div>
+    <button class="btn btn-del" onclick="clearHistory()">מחק 🗑️</button>
 </div>
 
-<div id="chat" id="chatbox">
-    <div class="welcome">שלום! אני ChatLBZ. דברו איתי או שאלו אותי מילים באנגלית! 🤖✨</div>
+<div id="chat">
+    <div class="welcome-card">
+        ChatLBZ 2.0 המילון המורחב! 🤖📖<br>
+        <span style="font-size: 0.9rem; font-weight: normal;">שאלו אותי כל מילה או כתבו "מסיבה"</span>
+    </div>
 </div>
 
 <div id="input-area">
-    <input type="text" id="userInput" placeholder="כתבו כאן..." onkeypress="if(event.key==='Enter') startSend()">
+    <input type="text" id="userInput" placeholder="איך אומרים...?" onkeypress="if(event.key==='Enter') startSend()">
     <button class="btn btn-send" onclick="startSend()">שלח 🚀</button>
 </div>
 
@@ -45,101 +48,23 @@
     let pInt;
     const chat = document.getElementById('chat');
 
-    // מאגר המידע העצום של האפליקציה
-    const database = {
-        // מילון עברי-אנגלי
-        "אדום": "Red 🔴", "כחול": "Blue 🔵", "ירוק": "Green 🟢", "צהוב": "Yellow 🟡", "שחור": "Black ⚫", "לבן": "White ⚪",
-        "אחד": "One 1️⃣", "שתיים": "Two 2️⃣", "שלוש": "Three 3️⃣", "עשר": "Ten 🔟", "מאה": "Hundred 💯",
-        "אבא": "Father/Dad 👨", "אמא": "Mother/Mom 👩", "אח": "Brother 👦", "אחות": "Sister 👧", "סבא": "Grandpa 👴", "סבתא": "Grandma 👵",
-        "לחם": "Bread 🍞", "חלב": "Milk 🥛", "גבינה": "Cheese 🧀", "תפוח": "Apple 🍎", "מים": "Water 💧", "קפה": "Coffee ☕",
-        "מזל טוב": "Mazel Tov / Congratulations 🥳", "בהצלחה": "Good Luck 🍀", "סליחה": "Sorry / Excuse me 🙏",
-        "חם": "Hot 🔥", "קר": "Cold ❄️", "גשם": "Rain 🌧️", "שלג": "Snow 🌨️", "קיץ": "Summer ☀️", "חורף": "Winter ❄️",
-        "בית": "House 🏠", "בית ספר": "School 🏫", "חנות": "Shop/Store 🛒", "עיר": "City 🏙️", "רחוב": "Street 🛣️",
-        "כלב": "Dog 🐶", "חתול": "Cat 🐱", "אריה": "Lion 🦁", "פיל": "Elephant 🐘", "נחש": "Snake 🐍",
-        
-        // שיחה רגילה
-        "שלום": "אהלן! איזה כיף לראות אותך. איך אני יכול לעזור? 😊",
-        "מה קורה": "הכל פשוט מעולה! מוכן לכל שאלה שלך. ⚡",
-        "מי אתה": "אני ChatLBZ, העוזר האישי שלך שנוצר על ידי Kavibz26 האלוף! 👑",
-        "בדיחה": "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים! 😂💀",
-        "מסיבה": "יאללההה בלגן! 🎉🌈🕺 תכתוב 'די' כדי לעצור.",
-        "תודה": "בכיף אחי! תמיד כאן בשבילך. 🙌",
-        "עזרה": "אני יודע לתרגם מילים לאנגלית, לספר בדיחות ולעשות מסיבה! 🧠"
-    };
-
-    // תשובות בינה מלאכותית כשהמילה לא נמצאה
-    const aiFillers = [
-        "שאלה מעניינת! נסה לשאול אותי איך אומרים 'אריה' באנגלית. 🦁",
-        "אני לומד כל הזמן. מה עוד תרצה לדעת? ✨",
-        "וואלה, את זה אני עדיין בודק בשרתים שלי... 🧠",
-        "אתה תותח! יש לך עוד שאלות בשבילי? 🚀",
-        "ChatLBZ כאן! נסה לכתוב 'מסיבה'. 🎉",
-        "מעניין... ספר לי עוד על זה! 🤔"
-    ];
-
-    // טעינת היסטוריה מהזיכרון
-    window.onload = () => {
-        const saved = localStorage.getItem('chat_history');
-        if (saved) {
-            chat.innerHTML = saved;
-            chat.scrollTop = chat.scrollHeight;
-        }
-    };
-
-    function saveChat() {
-        localStorage.setItem('chat_history', chat.innerHTML);
-    }
-
-    function clearAll() {
-        if(confirm("למחוק את כל ההיסטוריה? 🗑️")) {
-            localStorage.removeItem('chat_history');
-            location.reload();
-        }
-    }
-
-    function startSend() {
-        const input = document.getElementById('userInput');
-        const val = input.value.trim();
-        if (!val) return;
-
-        // הודעת משתמש
-        const uDiv = document.createElement('div');
-        uDiv.className = 'msg user';
-        uDiv.innerText = val;
-        chat.appendChild(uDiv);
-        input.value = "";
-        chat.scrollTop = chat.scrollHeight;
-        saveChat();
-
-        setTimeout(() => {
-            let reply = "";
-            const t = val.toLowerCase();
-            let found = false;
-
-            // חיפוש חכם במאגר
-            for (let key in database) {
-                if (t.includes(key)) {
-                    reply = database[key];
-                    if (key !== "מסיבה") reply = "התרגום/תשובה: " + reply;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (t.includes("מסיבה")) startP();
-            if (t.includes("די") || t.includes("עצור") || t.includes("סטופ")) { stopP(); reply = "נרגענו. חזרנו לשגרה 💡"; found = true; }
-
-            if (!found) reply = aiFillers[Math.floor(Math.random() * aiFillers.length)];
-
-            const bDiv = document.createElement('div');
-            bDiv.className = 'msg bot';
-            bDiv.innerText = "ChatLBZ: " + reply;
-            chat.appendChild(bDiv);
-            chat.scrollTop = chat.scrollHeight;
-            saveChat();
-        }, 600);
-    }
-
-    function startP() {
-        if (pInt) return;
-        document.getElementById('party-ui').style.display =
+    // מילון "מפלצתי" - מאות מילים מחולקות לפי קטגוריות
+    const bigDict = {
+        // --- חיות ---
+        "כלב": "Dog 🐶", "חתול": "Cat 🐱", "אריה": "Lion 🦁", "נמר": "Tiger 🐯", "פיל": "Elephant 🐘", "קוף": "Monkey 🐒", "עכבר": "Mouse 🐭", "סוס": "Horse 🐴", "פרה": "Cow 🐮", "כבשה": "Sheep 🐑", "ציפור": "Bird 🐦", "דג": "Fish 🐟", "נחש": "Snake 🐍", "דב": "Bear 🐻", "ארנב": "Rabbit 🐰", "זאב": "Wolf 🐺", "גמל": "Camel 🐪", "חמור": "Donkey 🫏",
+        // --- אוכל ושתייה ---
+        "לחם": "Bread 🍞", "חלב": "Milk 🥛", "מים": "Water 💧", "גבינה": "Cheese 🧀", "ביצה": "Egg 🥚", "בשר": "Meat 🥩", "עוף": "Chicken 🍗", "אורז": "Rice 🍚", "תפוח": "Apple 🍎", "בננה": "Banana 🍌", "ענבים": "Grapes 🍇", "עגבניה": "Tomato 🍅", "מלפפון": "Cucumber 🥒", "שוקולד": "Chocolate 🍫", "גלידה": "Ice Cream 🍦", "פיצה": "Pizza 🍕", "המבורגר": "Hamburger 🍔", "קפה": "Coffee ☕", "מיץ": "Juice 🧃",
+        // --- בית וחפצים ---
+        "בית": "House 🏠", "דלת": "Door 🚪", "חלון": "Window 🪟", "שולחן": "Table  tavolo", "כיסא": "Chair 🪑", "מיטה": "Bed 🛏️", "מטבח": "Kitchen 🍳", "חדר": "Room 🛋️", "טלפון": "Phone 📱", "מחשב": "Computer 💻", "ספר": "Book 📚", "עיפרון": "Pencil ✏️", "תיק": "Bag 🎒", "בגד": "Clothes 👕", "נעליים": "Shoes 👟", "שעון": "Watch ⌚", "מפתח": "Key 🔑",
+        // --- משפחה ואנשים ---
+        "אבא": "Father/Dad 👨", "אמא": "Mother/Mom 👩", "אח": "Brother 👦", "אחות": "Sister 👧", "סבא": "Grandfather 👴", "סבתא": "Grandmother 👵", "ילד": "Boy/Child 👦", "ילדה": "Girl 👧", "איש": "Man 👨", "אישה": "Woman 👩", "חבר": "Friend 🤝", "תינוק": "Baby 👶",
+        // --- צבעים ---
+        "אדום": "Red 🔴", "כחול": "Blue 🔵", "ירוק": "Green 🟢", "צהוב": "Yellow 🟡", "כתום": "Orange 🟠", "סגול": "Purple 🟣", "ורוד": "Pink 🩷", "שחור": "Black ⚫", "לבן": "White ⚪", "חום": "Brown 🟤", "אפור": "Gray 🩶",
+        // --- גוף האדם ---
+        "ראש": "Head 👤", "עין": "Eye 👁️", "אוזן": "Ear 👂", "אף": "Nose 👃", "פה": "Mouth 👄", "יד": "Hand ✋", "רגל": "Leg 🦵", "לב": "Heart ❤️", "שיער": "Hair 💇", "שיניים": "Teeth 🦷",
+        // --- טבע ומזג אוויר ---
+        "שמש": "Sun ☀️", "ירח": "Moon 🌙", "כוכב": "Star ⭐", "שמיים": "Sky ☁️", "ים": "Sea 🌊", "עץ": "Tree 🌳", "פרח": "Flower 🌸", "אדמה": "Ground 🌍", "אש": "Fire 🔥", "רוח": "Wind 💨", "גשם": "Rain 🌧️", "שלג": "Snow ❄️", "חם": "Hot 🔥", "קר": "Cold ❄️",
+        // --- מספרים ---
+        "אפס": "Zero 0️⃣", "אחד": "One 1️⃣", "שתיים": "Two 2️⃣", "שלוש": "Three 3️⃣", "ארבע": "Four 4️⃣", "חמש": "Five 5️⃣", "שש": "Six 6️⃣", "שבע": "Seven 7️⃣", "שמונה": "Eight 8️⃣", "תשע": "Nine 9️⃣", "עשר": "Ten 🔟", "מאה": "Hundred 💯", "אלף": "Thousand 🔢",
+        // --- פעלים ומושגים ---
+        "ללכת": "To Walk 🚶", "לרוץ": "To Run 🏃", "לאכול": "To Eat 🍴",
