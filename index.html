@@ -3,40 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ Creator AI 🎨🎬</title>
+    <title>ChatLBZ Pro AI 🎨</title>
     <style>
-        :root { --primary: #0044ff; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', sans-serif; background: #72edda; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        #header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; }
+        #header { background: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; }
         #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .welcome-msg { 
-            text-align: center; color: var(--primary); font-size: 1.3rem; 
-            font-weight: bold; margin: 20px auto; background: white;
-            padding: 15px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .msg { padding: 14px; border-radius: 18px; max-width: 85%; font-size: 16px; line-height: 1.5; }
+        .welcome-msg { text-align: center; color: #0044ff; font-size: 1.3rem; font-weight: bold; margin: 20px auto; background: white; padding: 15px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .msg { padding: 14px; border-radius: 18px; max-width: 85%; font-size: 16px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .user { align-self: flex-end; background: #0044ff; color: white; }
-        .bot { align-self: flex-start; background: white; border: 1px solid #ddd; }
-        
-        /* עיצוב לתמונות וסרטונים */
-        .ai-image { width: 100%; max-width: 300px; border-radius: 10px; margin-top: 10px; border: 2px solid var(--primary); }
-        .ai-video { width: 100%; max-width: 300px; height: 200px; border-radius: 10px; margin-top: 10px; }
-
+        .bot { align-self: flex-start; background: white; color: #333; border: 1px solid #ddd; }
+        .ai-media { width: 100%; max-width: 300px; border-radius: 10px; margin-top: 10px; display: block; border: 2px solid #0044ff; }
         #input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
-        .btn { padding: 10px 18px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; font-size: 16px; }
+        .btn { padding: 10px 20px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; background: #0044ff; color: white; }
     </style>
 </head>
 <body>
 
 <div id="header">
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="width:35px; height:35px; background:blue; border-radius:50%; color:white; display:flex; justify-content:center; align-items:center; font-size:12px;">LBZ</div>
-        <h2 style="margin:0; font-size: 1rem;">ChatLBZ Creator</h2>
-    </div>
-    <button class="btn" style="background:#ff4d4d;" onclick="localStorage.clear(); location.reload();">🗑️ נקה</button>
+    <b style="color:#0044ff;">ChatLBZ Creator 🚀</b>
+    <button onclick="localStorage.clear(); location.reload();" style="background:red; color:white; border:none; border-radius:10px; cursor:pointer; padding:5px 10px;">🗑️ נקה</button>
 </div>
 
 <div id="chat">
@@ -44,72 +30,56 @@
 </div>
 
 <div id="input-area">
-    <input type="text" id="userInput" placeholder="בקש תמונה, סרטון או סתם דבר..." onkeypress="if(event.key==='Enter') sendMessage()">
-    <button class="btn" onclick="sendMessage()">שלח 🚀</button>
+    <input type="text" id="userInput" placeholder="כתוב הודעה, תמונה של... או סרטון של..." onkeypress="if(event.key==='Enter') doSend()">
+    <button class="btn" onclick="doSend()">שלח 🚀</button>
 </div>
 
 <script>
     const chat = document.getElementById('chat');
 
-    function sendMessage() {
+    function doSend() {
         const inp = document.getElementById('userInput');
         const val = inp.value.trim();
         if (!val) return;
 
-        addMessage(val, 'user');
+        // הצגת הודעת משתמש
+        addMsg(val, 'user');
         inp.value = "";
 
+        // תגובת בוט
         setTimeout(() => {
-            let res = "אני כאן איתך! ";
-            let type = "text";
-            const t = val.toLowerCase();
+            let t = val.toLowerCase();
+            let responseText = "אני כאן לעזור! 😊";
+            let mediaHtml = "";
 
-            // מנגנון "יצירת" תמונה (חיפוש חופשי)
-            if (t.includes("תמונה") || t.includes("צייר")) {
-                const query = t.replace("תמונה", "").replace("של", "").replace("תצייר", "").trim();
-                const imgUrl = `https://source.unsplash.com/featured/?${query || 'art'}`;
-                addMessage(`הנה התמונה שביקשת עבור: ${query || 'משהו יפה'}`, 'bot', imgUrl, 'image');
-                return;
+            if (t.includes("תמונה של")) {
+                let query = t.replace("תמונה של", "").trim();
+                responseText = "הנה תמונה שייצרתי במיוחד עבורך: " + query;
+                mediaHtml = `<img src="https://loremflickr.com/600/400/${query}" class="ai-media">`;
+            } 
+            else if (t.includes("סרטון של")) {
+                let query = t.replace("סרטון של", "").trim();
+                responseText = "מצאתי סרטון שמתאים למה שביקשת:";
+                mediaHtml = `<iframe class="ai-media" style="height:200px;" src="https://www.youtube.com/embed?listType=search&list=${query}" frameborder="0" allowfullscreen></iframe>`;
+            }
+            else if (t.includes("שלום") || t.includes("היי")) {
+                responseText = "אהלן! אני ChatLBZ. אני יכול לדבר, ליצור תמונות או למצוא סרטונים. מה עושים היום? ✨";
+            }
+            else if (t.includes("בדיחה")) {
+                responseText = "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים! 😂";
+            }
+            else {
+                responseText = "וואלה, נשמע מעניין! רוצה שאני אנסה ליצור תמונה או למצוא סרטון על זה? פשוט תכתוב 'תמונה של...'";
             }
 
-            // מנגנון "יצירת" סרטון (שליפה מיוטיוב)
-            if (t.includes("סרטון") || t.includes("וידאו")) {
-                const query = t.replace("סרטון", "").replace("של", "").trim();
-                const videoUrl = `https://www.youtube.com/embed?listType=search&list=${query || 'funny cats'}`;
-                addMessage(`מצאתי סרטון מעולה של ${query || 'משהו מעניין'}:`, 'bot', videoUrl, 'video');
-                return;
-            }
-
-            // תשובות רגילות
-            if (t.includes("שלום")) res = "אהלן! אני יכול לצייר לך תמונות או למצוא סרטונים. מה בא לך?";
-            else if (t.includes("מה קורה")) res = "הכל אש! מוכן ליצירה. 🎨";
-            else res = "וואלה, נשמע מעניין! רוצה שאני אחפש לך תמונה או סרטון על זה? פשוט תכתוב 'תמונה של...'";
-
-            addMessage(res, 'bot');
-        }, 800);
+            addMsg(responseText, 'bot', mediaHtml);
+        }, 700);
     }
 
-    function addMessage(text, side, mediaUrl = null, mediaType = null) {
+    function addMsg(text, side, html = "") {
         const div = document.createElement('div');
         div.className = `msg ${side}`;
-        div.innerText = (side === 'bot' ? "ChatLBZ: " : "") + text;
-
-        if (mediaUrl) {
-            if (mediaType === 'image') {
-                const img = document.createElement('img');
-                img.src = mediaUrl;
-                img.className = 'ai-image';
-                div.appendChild(img);
-            } else if (mediaType === 'video') {
-                const iframe = document.createElement('iframe');
-                iframe.src = mediaUrl;
-                iframe.className = 'ai-video';
-                iframe.frameBorder = "0";
-                iframe.allowFullscreen = true;
-                div.appendChild(iframe);
-            }
-        }
-
+        div.innerHTML = (side === 'bot' ? "<b>ChatLBZ:</b> " : "") + text + html;
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
     }
