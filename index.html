@@ -42,7 +42,7 @@
 </div>
 
 <script>
-    // שים לב: כאן אתה מדביק את ה-API Key שלך (הקוד שמתחיל ב-AIza)
+    // המפתח שלך כבר בפנים אחי!
     const API_KEY = "AIzaSyDedL6iFecR4Mf-cLxOh4l2H360JaR-gFc"; 
 
     const chatbox = document.getElementById('chatbox');
@@ -72,8 +72,8 @@
 
         typingIndicator.style.display = "block";
         try {
-            // התיקון המרכזי: שיניתי לגרסה v1 היציבה
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            // התיקון: שימוש בגרסת v1beta ומודל gemini-pro (יותר תואם למפתחים חדשים)
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -91,7 +91,7 @@
                 addMsg("סליחה, לא קיבלתי תשובה מהשרת.", 'bot');
             }
         } catch (e) {
-            addMsg("שגיאה בחיבור. בדוק את ה-API Key שלך.", 'bot');
+            addMsg("שגיאה בחיבור. נסה שוב בעוד רגע.", 'bot');
         } finally {
             typingIndicator.style.display = "none";
         }
