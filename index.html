@@ -7,31 +7,17 @@
     <style>
         :root { --primary: #0044ff; --bg: #72edda; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        #header { background: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; }
-        
+        #header { background: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         #chatbox { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .welcome-msg { 
-            text-align: center; color: var(--primary); font-size: 1.3rem; 
-            font-weight: bold; margin: 20px auto; background: rgba(255,255,255,0.9);
-            padding: 15px 25px; border-radius: 25px; align-self: center;
-        }
-
+        .welcome-msg { text-align: center; color: var(--primary); font-size: 1.3rem; font-weight: bold; margin: 20px auto; background: white; padding: 15px 25px; border-radius: 25px; align-self: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .msg { padding: 14px 18px; border-radius: 20px; max-width: 85%; font-size: 16px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0,0,0,0.05); white-space: pre-wrap; word-wrap: break-word; }
         .user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
         .bot { align-self: flex-start; background: white; color: #333; border: 1px solid #ddd; border-bottom-left-radius: 2px; }
-        
         .ai-media { width: 100%; max-width: 320px; border-radius: 15px; margin-top: 10px; display: block; border: 3px solid var(--primary); }
-
         #input-area { background: white; padding: 15px 20px; display: flex; gap: 12px; border-top: 1px solid #ddd; }
         input { flex: 1; padding: 14px 22px; border-radius: 30px; border: 2px solid #eee; outline: none; font-size: 16px; }
-        
-        .btn-send { background: var(--primary); color: white; padding: 12px 24px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-send:disabled { background: #ccc; }
-
-        /* אנימציית טעינה */
-        .typing { font-style: italic; color: #777; font-size: 14px; margin-bottom: 10px; display: none; }
+        .btn-send { background: var(--primary); color: white; padding: 12px 24px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; }
+        .typing { font-style: italic; color: #777; font-size: 14px; margin-bottom: 10px; display: none; padding: 0 20px; }
     </style>
 </head>
 <body>
@@ -48,7 +34,7 @@
     <div class="welcome-msg">היי אני ChatLBZ איך אוכל לעזור לך היום</div>
 </div>
 
-<div id="typing-indicator" class="typing" style="padding: 0 20px;">ChatLBZ חושב...</div>
+<div id="typing-indicator" class="typing">ChatLBZ חושב...</div>
 
 <div id="input-area">
     <input type="text" id="userInput" placeholder="שאל אותי משהו או בקש תמונה..." onkeypress="if(event.key==='Enter') startChat()">
@@ -56,12 +42,51 @@
 </div>
 
 <script>
-    // חשוב מאוד: תדביק את המפתח שמתחיל ב-AIza בין הגרשיים למטה!
-    const API_KEY = "AIzaSyDedL6iFecR4Mf-cLxOh4l2H360JaR-gFc"; 
+    // הצעד האחרון: תעתיק את הקוד שמתחיל ב-AIza מהאתר של גוגל ותדביק אותו כאן למטה בין המרכאות!
+    const API_KEY = "הדבק_כאן_את_המפתח_מהאתר_של_גוגל"; 
 
     const chatbox = document.getElementById('chatbox');
     const typingIndicator = document.getElementById('typing-indicator');
-    const sendBtn = document.getElementById('sendBtn');
+
+    async function startChat() {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        addMsg(text, 'user');
+        input.value = "";
+        
+        // פקודות תמונה/סרטון מהירות
+        if (text.includes("תמונה של")) {
+            let q = text.replace("תמונה של", "").trim();
+            addMsg("מייצר לך תמונה של " + (q || "משהו יפה") + "...", 'bot', `<img src="https://loremflickr.com/640/480/${q || 'art'}" class="ai-media">`);
+            return;
+        }
+        if (text.includes("סרטון של")) {
+            let q = text.replace("סרטון של", "").trim();
+            addMsg("מצאתי סרטון עבורך:", 'bot', `<iframe class="ai-media" style="height:220px;" src="https://www.youtube.com/embed?listType=search&list=${q}" frameborder="0" allowfullscreen></iframe>`);
+            return;
+        }
+
+        // תקשורת עם הבינה המלאכותית
+        typingIndicator.style.display = "block";
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "אתה ChatLBZ, עוזר אישי חכם. ענה בעברית: " + text }] }]
+                })
+            });
+            const data = await response.json();
+            const aiReply = data.candidates[0].content.parts[0].text;
+            addMsg(aiReply, 'bot');
+        } catch (e) {
+            addMsg("שגיאה: המפתח לא תקין. וודא שהעתקת את הקוד שמתחיל ב-AIza מהקישור ששלחת לי.", 'bot');
+        } finally {
+            typingIndicator.style.display = "none";
+        }
+    }
 
     function addMsg(text, side, html = "") {
         const div = document.createElement('div');
@@ -70,60 +95,6 @@
         chatbox.appendChild(div);
         chatbox.scrollTop = chatbox.scrollHeight;
     }
-
-    async function startChat() {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        
-        if (!text || sendBtn.disabled) return;
-
-        addMsg(text, 'user');
-        input.value = "";
-        
-        // בדיקת פקודות מדיה מהירות (תמונה/סרטון)
-        if (text.includes("תמונה של")) {
-            let q = text.replace("תמונה של", "").trim();
-            addMsg("מייצר לך תמונה של " + (q || "משהו יפה") + "...", 'bot', `<img src="https://loremflickr.com/640/480/${q || 'art'}" class="ai-media">`);
-            return;
-        }
-        
-        if (text.includes("סרטון של")) {
-            let q = text.replace("סרטון של", "").trim();
-            addMsg("מצאתי סרטון עבורך:", 'bot', `<iframe class="ai-media" style="height:220px;" src="https://www.youtube.com/embed?listType=search&list=${q}" frameborder="0" allowfullscreen></iframe>`);
-            return;
-        }
-
-        // אם זו שאלה רגילה - שולחים ל-AI
-        typingIndicator.style.display = "block";
-        sendBtn.disabled = true;
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: "ענה בעברית כעוזר אישי חכם בשם ChatLBZ שנוצר על ידי Kavibz26. השאלה היא: " + text }] }]
-                })
-            });
-
-            const data = await response.json();
-            
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                const aiReply = data.candidates[0].content.parts[0].text;
-                addMsg(aiReply, 'bot');
-            } else {
-                throw new Error("No response");
-            }
-
-        } catch (error) {
-            console.error(error);
-            addMsg("אופס! נראה שהמפתח (API Key) לא הוכנס נכון או שיש בעיית תקשורת. וודא שהעתקת את המפתח במלואו.", 'bot');
-        } finally {
-            typingIndicator.style.display = "none";
-            sendBtn.disabled = false;
-        }
-    }
 </script>
-
 </body>
 </html>
