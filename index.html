@@ -2,35 +2,42 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ChatLBZ בדיקה</title>
+    <title>ChatLBZ Fix</title>
     <style>
         body { font-family: sans-serif; background: #72edda; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
-        .chat-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 90%; max-width: 400px; }
-        input { width: 80%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-        button { padding: 10px; background: #0044ff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #response { margin-top: 20px; font-weight: bold; color: #333; }
+        .chat-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 90%; max-width: 400px; text-align: center; }
+        input { width: 80%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px; }
+        button { padding: 10px 20px; background: #0044ff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #response { margin-top: 20px; padding: 10px; border-radius: 10px; min-height: 30px; }
     </style>
 </head>
 <body>
 
 <div class="chat-container">
-    <h2>ChatLBZ - בדיקה סופית</h2>
-    <input type="text" id="userInput" placeholder="כתוב לי משהו...">
-    <button onclick="sendToAI()">שלח</button>
-    <div id="response">התשובה תופיע כאן...</div>
+    <h2>ChatLBZ - בדיקת מפתח</h2>
+    <input type="text" id="userInput" placeholder="כתוב משהו לבדיקה...">
+    <br>
+    <button onclick="sendToAI()">שלח בדיקה 🚀</button>
+    <div id="response">המתן לתשובה...</div>
 </div>
 
 <script>
-    // הצעד הכי חשוב: תמחק את המילים "הדבק_כאן" ותדביק את המפתח החדש בתוך המרכאות
-    const MY_KEY = "AIzaSyAiirDWJWtAVis7DvfouLoqPhhAKwTTWaE"; 
+    // השתמשתי במפתח ששלחת לי קודם - וודא שהוא עדיין תקין ב-Google AI Studio
+    const API_KEY = "AIzaSyAiirDWJWtAVis7DvfouLoqPhhAKwTTWaE"; 
 
     async function sendToAI() {
         const input = document.getElementById('userInput').value;
         const resDiv = document.getElementById('response');
-        resDiv.innerText = "חושב...";
+        
+        if (!input) return alert("כתוב משהו!");
+        
+        resDiv.innerText = "מעבד נתונים...";
+        resDiv.style.background = "#eee";
+        resDiv.style.color = "#333";
 
         try {
-            const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + MY_KEY;
+            // הכתובת המדויקת שגוגל דורשת
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
             
             const response = await fetch(url, {
                 method: "POST",
@@ -43,14 +50,17 @@
             const data = await response.json();
             
             if (data.error) {
-                resDiv.style.color = "red";
-                resDiv.innerText = "שגיאה מגוגל: " + data.error.message;
+                resDiv.style.color = "white";
+                resDiv.style.background = "red";
+                resDiv.innerText = "שגיאה: " + data.error.message;
             } else {
-                resDiv.style.color = "green";
+                resDiv.style.color = "white";
+                resDiv.style.background = "green";
                 resDiv.innerText = data.candidates[0].content.parts[0].text;
             }
         } catch (err) {
-            resDiv.innerText = "בעיה בחיבור. וודא שהעתקת את המפתח נכון.";
+            resDiv.style.background = "orange";
+            resDiv.innerText = "תקלה טכנית: " + err.message;
         }
     }
 </script>
