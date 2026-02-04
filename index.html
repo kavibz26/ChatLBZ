@@ -2,67 +2,76 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ChatLBZ - Debug Mode</title>
+    <title>ChatLBZ - התיקון המנצח</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #0044ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        #log { margin-top: 20px; font-size: 14px; background: #333; color: #0f0; padding: 15px; border-radius: 8px; overflow-x: auto; min-height: 100px; text-align: left; direction: ltr; }
+        body { font-family: sans-serif; background: #72edda; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { background: #0044ff; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+        #res { margin-top: 20px; padding: 15px; border-radius: 10px; background: #f9f9f9; min-height: 40px; color: #333; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2>ChatLBZ - בדיקה עמוקה</h2>
-    <input type="text" id="userInput" placeholder="כתוב משהו לבדיקה...">
-    <button onclick="runTest()">הפעל בדיקה 🚀</button>
-    <div id="log">מוכן לבדיקה...</div>
+<div class="card">
+    <h2>ChatLBZ Genius</h2>
+    <input type="text" id="userInput" placeholder="כתוב משהו...">
+    <button onclick="askAI()">שלח 🚀</button>
+    <div id="res">התשובה תופיע כאן...</div>
 </div>
 
 <script>
-    // 1. תכניס כאן את המפתח החדש שיצרת!
-    const API_KEY = "AIzaSyBuqoCiih-Um2N7Xgklz0lq8-8l1cybJio";
+    // 1. שים כאן את המפתח החדש שיצרת
+    const API_KEY = "AIzaSyBBnrfAMCp2fYWQ1HE28TNiNk_UVYRpZg0"; 
 
-    async function runTest() {
-        const log = document.getElementById('log');
+    async function askAI() {
+        const out = document.getElementById('res');
         const input = document.getElementById('userInput').value;
-        
-        log.innerHTML = "תחילת בדיקה...<br>";
+        if(!input) return;
 
-        if (API_KEY.includes("הדבק_כאן")) {
-            log.innerHTML += "<span style='color:red'>שגיאה: לא החלפת את המפתח בקוד!</span>";
-            return;
-        }
+        out.innerText = "מעבד...";
+        out.style.color = "blue";
 
         try {
-            // ניסיון ישיר למודל הכי נפוץ בגרסה הכי יציבה
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-            
-            log.innerHTML += `מתחבר לכתובת גוגל...<br>`;
-            
-            const response = await fetch(url, {
+            // התיקון הקריטי: מעבר לגרסה v1 ומודל gemini-1.5-flash
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: input || "היי" }] }] })
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: input }] }]
+                })
             });
 
             const data = await response.json();
-            
+
             if (data.error) {
-                log.innerHTML += `<span style='color:orange'>גוגל החזירה שגיאה: ${data.error.message}</span><br>`;
-                log.innerHTML += `קוד שגיאה: ${data.error.status}`;
-            } else if (data.candidates) {
-                log.innerHTML = `<span style='color:#0f0'>הצלחה!!! התשובה:</span><br>${data.candidates[0].content.parts[0].text}`;
-            } else {
-                log.innerHTML += "קיבלתי תשובה ריקה מגוגל. מוזר.";
+                // אם גוגל עדיין עושה בעיות עם flash, ננסה אוטומטית את gemini-pro
+                return tryPro(input);
             }
 
-        } catch (err) {
-            log.innerHTML += `<span style='color:red'>שגיאה קריטית: ${err.message}</span>`;
+            out.innerText = data.candidates[0].content.parts[0].text;
+            out.style.color = "black";
+
+        } catch (e) {
+            out.innerText = "שגיאה בחיבור: " + e.message;
+            out.style.color = "red";
+        }
+    }
+
+    async function tryPro(text) {
+        const out = document.getElementById('res');
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+        });
+        const data = await response.json();
+        if (data.error) {
+            out.innerText = "שגיאה סופית: " + data.error.message;
+        } else {
+            out.innerText = data.candidates[0].content.parts[0].text;
         }
     }
 </script>
-
 </body>
 </html>
