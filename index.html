@@ -3,43 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatLBZ AI Assistant 🤖</title>
+    <title>ChatLBZ Creator AI 🎨🎬</title>
     <style>
         :root { --primary: #0044ff; --bg: #f0f2f5; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #72edda; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: 0.5s; }
-        #header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
+        body { font-family: 'Segoe UI', sans-serif; background: #72edda; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        #header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; }
         #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         
         .welcome-msg { 
             text-align: center; color: var(--primary); font-size: 1.3rem; 
-            font-weight: bold; margin: 20px auto; background: rgba(255,255,255,0.9);
-            padding: 15px 25px; border-radius: 20px; width: fit-content;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-weight: bold; margin: 20px auto; background: white;
+            padding: 15px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .msg { padding: 14px 18px; border-radius: 20px; max-width: 80%; font-size: 16px; line-height: 1.5; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
-        .user { align-self: flex-end; background: #0044ff; color: white; border-bottom-right-radius: 2px; }
-        .bot { align-self: flex-start; background: white; color: #333; border-bottom-left-radius: 2px; border: 1px solid #ddd; }
+        .msg { padding: 14px; border-radius: 18px; max-width: 85%; font-size: 16px; line-height: 1.5; }
+        .user { align-self: flex-end; background: #0044ff; color: white; }
+        .bot { align-self: flex-start; background: white; border: 1px solid #ddd; }
         
+        /* עיצוב לתמונות וסרטונים */
+        .ai-image { width: 100%; max-width: 300px; border-radius: 10px; margin-top: 10px; border: 2px solid var(--primary); }
+        .ai-video { width: 100%; max-width: 300px; height: 200px; border-radius: 10px; margin-top: 10px; }
+
         #input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
-        input { flex: 1; padding: 14px 20px; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 5px rgba(0,68,255,0.2); }
-        .btn { padding: 10px 20px; border-radius: 25px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-send { background: var(--primary); color: white; }
-        .btn-send:hover { transform: scale(1.05); background: #0033cc; }
-        .btn-del { background: #ff4d4d; color: white; font-size: 12px; }
-        #party-tag { display: none; background: #333; color: white; padding: 5px 12px; border-radius: 10px; cursor: pointer; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
+        .btn { padding: 10px 18px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
     </style>
 </head>
 <body>
 
 <div id="header">
     <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="width:40px; height:40px; background:var(--primary); border-radius:50%; color:white; display:flex; justify-content:center; align-items:center; font-weight:bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">LBZ</div>
-        <h2 style="margin:0; font-size: 1.1rem; color: var(--primary);">ChatLBZ Assistant</h2>
+        <div style="width:35px; height:35px; background:blue; border-radius:50%; color:white; display:flex; justify-content:center; align-items:center; font-size:12px;">LBZ</div>
+        <h2 style="margin:0; font-size: 1rem;">ChatLBZ Creator</h2>
     </div>
-    <div id="party-tag" onclick="stopP()">עצור מסיבה 🛑</div>
-    <button class="btn btn-del" onclick="clearHistory()">🗑️ מחק שיחה</button>
+    <button class="btn" style="background:#ff4d4d;" onclick="localStorage.clear(); location.reload();">🗑️ נקה</button>
 </div>
 
 <div id="chat">
@@ -47,57 +44,76 @@
 </div>
 
 <div id="input-area">
-    <input type="text" id="userInput" placeholder="בוא נדבר על משהו..." onkeypress="if(event.key==='Enter') sendMessage()">
-    <button class="btn btn-send" onclick="sendMessage()">שלח 🚀</button>
+    <input type="text" id="userInput" placeholder="בקש תמונה, סרטון או סתם דבר..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button class="btn" onclick="sendMessage()">שלח 🚀</button>
 </div>
 
 <script>
-    let pInt;
     const chat = document.getElementById('chat');
-
-    // מערכת תגובות חכמה (שיחה במקום מילון)
-    const aiBrains = [
-        { keys: ["שלום", "היי", "אהלן", "הייתי"], response: "אהלן! איזה כיף שכתבת לי. אני כאן לכל מה שאתה צריך. איך עובר עליך היום? 😊" },
-        { keys: ["מה קורה", "מה נשמע", "איך אתה", "מה המצב"], response: "וואלה אני מרגיש מצוין! תמיד שמח לעזור. מה אצלך? משהו מעניין שקרה היום? ✨" },
-        { keys: ["עזרה", "מה אתה יודע", "מה אתה עושה"], response: "אני יכול לדבר איתך על הכל! אני יודע לייעץ, לספר בדיחות, לעזור בלימודים או סתם להעביר איתך את הזמן בכיף. 🤖" },
-        { keys: ["עצוב", "מבאס", "קשה", "רע"], response: "מצטער לשמוע אחי... זכור שאני תמיד כאן בשבילך. רוצה לספר לי מה קרה או שננסה לשנות אווירה עם איזו 'מסיבה'? ❤️" },
-        { keys: ["שמח", "כיף", "טוב", "מעולה"], response: "איזה יופי! אני מת על אנרגיות חיוביות. בוא נמשיך ככה! 🚀" },
-        { keys: ["בדיחה", "מצחיק"], response: "למה מחשבים לא רוקדים? כי יש להם שני דיסקים קשיחים! 😂💀" },
-        { keys: ["מי בנה", "מי יצר", "מי אתה"], response: "אני ChatLBZ, העוזר האישי שלך. Kavibz26 בנה אותי כדי שיהיה לך הכי נוח בעולם! 👑" },
-        { keys: ["תודה", "תותח", "מלך"], response: "בכיף! זה התפקיד שלי. תמיד כאן בשבילך. 🙌" },
-        { keys: ["מסיבה", "בלגן"], response: "יאללההה! הרמת לי להנחתה. מתחילים! 🎉🕺" }
-    ];
-
-    const fallbackResponses = [
-        "וואלה, מעניין מה שאתה אומר. ספר לי עוד על זה? 🤔",
-        "אני מבין אותך. מה דעתך שנדבר על זה לעומק?",
-        "חחחח אתה תמיד מפתיע אותי. מה עוד?",
-        "אני לומד מהשיחות איתך המון. תמשיך! ✨",
-        "וואו, זה משהו שלא חשבתי עליו. אתה חכם! 🧠"
-    ];
-
-    window.onload = () => {
-        const h = localStorage.getItem('assistant_history');
-        if (h) { chat.innerHTML = h; chat.scrollTop = chat.scrollHeight; }
-    };
-
-    function saveHistory() { localStorage.setItem('assistant_history', chat.innerHTML); }
-
-    function clearHistory() {
-        if(confirm("למחוק את כל השיחה? ✨")) {
-            localStorage.removeItem('assistant_history');
-            location.reload();
-        }
-    }
 
     function sendMessage() {
         const inp = document.getElementById('userInput');
         const val = inp.value.trim();
         if (!val) return;
 
-        const uDiv = document.createElement('div');
-        uDiv.className = 'msg user';
-        uDiv.innerText = val;
-        chat.appendChild(uDiv);
+        addMessage(val, 'user');
         inp.value = "";
-        chat.
+
+        setTimeout(() => {
+            let res = "אני כאן איתך! ";
+            let type = "text";
+            const t = val.toLowerCase();
+
+            // מנגנון "יצירת" תמונה (חיפוש חופשי)
+            if (t.includes("תמונה") || t.includes("צייר")) {
+                const query = t.replace("תמונה", "").replace("של", "").replace("תצייר", "").trim();
+                const imgUrl = `https://source.unsplash.com/featured/?${query || 'art'}`;
+                addMessage(`הנה התמונה שביקשת עבור: ${query || 'משהו יפה'}`, 'bot', imgUrl, 'image');
+                return;
+            }
+
+            // מנגנון "יצירת" סרטון (שליפה מיוטיוב)
+            if (t.includes("סרטון") || t.includes("וידאו")) {
+                const query = t.replace("סרטון", "").replace("של", "").trim();
+                const videoUrl = `https://www.youtube.com/embed?listType=search&list=${query || 'funny cats'}`;
+                addMessage(`מצאתי סרטון מעולה של ${query || 'משהו מעניין'}:`, 'bot', videoUrl, 'video');
+                return;
+            }
+
+            // תשובות רגילות
+            if (t.includes("שלום")) res = "אהלן! אני יכול לצייר לך תמונות או למצוא סרטונים. מה בא לך?";
+            else if (t.includes("מה קורה")) res = "הכל אש! מוכן ליצירה. 🎨";
+            else res = "וואלה, נשמע מעניין! רוצה שאני אחפש לך תמונה או סרטון על זה? פשוט תכתוב 'תמונה של...'";
+
+            addMessage(res, 'bot');
+        }, 800);
+    }
+
+    function addMessage(text, side, mediaUrl = null, mediaType = null) {
+        const div = document.createElement('div');
+        div.className = `msg ${side}`;
+        div.innerText = (side === 'bot' ? "ChatLBZ: " : "") + text;
+
+        if (mediaUrl) {
+            if (mediaType === 'image') {
+                const img = document.createElement('img');
+                img.src = mediaUrl;
+                img.className = 'ai-image';
+                div.appendChild(img);
+            } else if (mediaType === 'video') {
+                const iframe = document.createElement('iframe');
+                iframe.src = mediaUrl;
+                iframe.className = 'ai-video';
+                iframe.frameBorder = "0";
+                iframe.allowFullscreen = true;
+                div.appendChild(iframe);
+            }
+        }
+
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
