@@ -2,89 +2,72 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ChatLBZ Final Fix 🚀</title>
+    <title>ChatLBZ - התיקון הסופי 🚀</title>
     <style>
-        body { font-family: sans-serif; background: #72edda; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
-        .chat-container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 450px; text-align: center; }
-        input { width: 85%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 15px; font-size: 16px; }
-        button { padding: 12px 25px; background: #0044ff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        #response { margin-top: 20px; padding: 15px; border-radius: 10px; min-height: 50px; line-height: 1.6; text-align: right; }
-        .loading { color: #666; font-style: italic; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #72edda; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 90%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; font-size: 16px; }
+        button { background: #0044ff; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
+        #status { margin-top: 15px; font-size: 14px; color: #666; }
+        #output { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; text-align: right; min-height: 40px; border-right: 4px solid #0044ff; display: none; }
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <h2 style="color: #0044ff;">ChatLBZ Genius</h2>
-    <p>גרסה מתוקנת (v1.5-8b)</p>
+<div class="card">
+    <h2 style="color: #0044ff; margin-top: 0;">ChatLBZ Genius</h2>
     <input type="text" id="userInput" placeholder="שאל אותי משהו...">
-    <br>
-    <button onclick="sendToAI()">שלח הודעה 🚀</button>
-    <div id="response">כאן תופיע התשובה...</div>
+    <button onclick="smartSend()">שלח הודעה 🚀</button>
+    <div id="status"></div>
+    <div id="output"></div>
 </div>
 
 <script>
-    // המפתח שלך מעודכן כאן
-    const API_KEY = "AIzaSyAiirDWJWtAVis7DvfouLoqPhhAKwTTWaE"; 
+    const API_KEY = "AIzaSyAiirDWJWtAVis7DvfouLoqPhhAKwTTWaE";
 
-    async function sendToAI() {
-        const inputField = document.getElementById('userInput');
-        const resDiv = document.getElementById('response');
-        const text = inputField.value.trim();
+    async function smartSend() {
+        const input = document.getElementById('userInput').value;
+        const status = document.getElementById('status');
+        const output = document.getElementById('output');
         
-        if (!text) return;
-        
-        resDiv.innerText = "ChatLBZ חושב...";
-        resDiv.className = "loading";
-        resDiv.style.background = "#f9f9f9";
+        if (!input) return;
 
-        try {
-            // שימוש במודל gemini-1.5-flash-8b שהוא הכי נגיש
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${API_KEY}`;
-            
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: text }] }]
-                })
-            });
+        status.innerText = "מנסה להתחבר לגוגל...";
+        output.style.display = "none";
 
-            const data = await response.json();
+        // רשימת המודלים שננסה לפי סדר
+        const models = [
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-8b",
+            "gemini-1.0-pro",
+            "gemini-pro"
+        ];
+
+        for (let model of models) {
+            status.innerText = `מנסה מודל: ${model}...`;
             
-            if (data.error) {
-                // אם גם זה לא עובד, ננסה מודל בסיסי יותר (gemini-pro)
-                if (data.error.message.includes("not found")) {
-                    return tryBackupModel(text);
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: input }] }] })
+                });
+
+                const data = await response.json();
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    status.innerText = "הצלחה! ✅";
+                    output.style.display = "block";
+                    output.innerText = data.candidates[0].content.parts[0].text;
+                    return; // הצלחנו, עוצרים את הלולאה
                 }
-                resDiv.style.color = "red";
-                resDiv.innerText = "שגיאה מגוגל: " + data.error.message;
-            } else {
-                resDiv.style.color = "#333";
-                resDiv.style.background = "#eef9ff";
-                resDiv.innerText = data.candidates[0].content.parts[0].text;
-                inputField.value = "";
+            } catch (e) {
+                console.log(model + " נכשל, מנסה את הבא...");
             }
-        } catch (err) {
-            resDiv.innerText = "תקלה בחיבור: " + err.message;
         }
-    }
 
-    // פונקציית גיבוי למקרה שהמודל הראשון נכשל
-    async function tryBackupModel(text) {
-        const resDiv = document.getElementById('response');
-        try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-            });
-            const data = await response.json();
-            resDiv.innerText = data.candidates[0].content.parts[0].text;
-        } catch (e) {
-            resDiv.innerText = "גוגל עדיין לא מאשרת את המפתח. נסה לייצר מפתח חדש ב-AI Studio.";
-        }
+        status.innerText = "שגיאה: כל המודלים נכשלו. כנראה המפתח לא בתוקף.";
+        status.style.color = "red";
     }
 </script>
 
