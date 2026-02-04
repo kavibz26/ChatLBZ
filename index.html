@@ -1,43 +1,68 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatLBZ - Debug Mode</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #0044ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #log { margin-top: 20px; font-size: 14px; background: #333; color: #0f0; padding: 15px; border-radius: 8px; overflow-x: auto; min-height: 100px; text-align: left; direction: ltr; }
+    </style>
+</head>
 <body>
-    <h2>בדיקת ChatLBZ</h2>
-    <input type="text" id="userInput" placeholder="כתוב משהו...">
-    <button onclick="check()">שלח בדיקה</button>
-    <div id="log" style="white-space: pre-wrap; margin-top: 20px; color: blue;"></div>
 
-    <script>
-        async function check() {
-            const log = document.getElementById('log');
-            const input = document.getElementById('userInput').value;
-            // תדביק כאן את המפתח החדש שיצרת הרגע
-            const KEY = "AIzaSyBuqoCiih-Um2N7Xgklz0lq8-8l1cybJio"; 
-            
-            log.innerText = "שולח בקשה...";
+<div class="box">
+    <h2>ChatLBZ - בדיקה עמוקה</h2>
+    <input type="text" id="userInput" placeholder="כתוב משהו לבדיקה...">
+    <button onclick="runTest()">הפעל בדיקה 🚀</button>
+    <div id="log">מוכן לבדיקה...</div>
+</div>
 
-            try {
-                // הכתובת הזו היא הכי יציבה שיש
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: input }] }] })
-                });
+<script>
+    // 1. תכניס כאן את המפתח החדש שיצרת!
+    const API_KEY = "AIzaSyBuqoCiih-Um2N7Xgklz0lq8-8l1cybJio";
 
-                const data = await response.json();
-                
-                if (data.error) {
-                    log.style.color = "red";
-                    log.innerText = "שגיאה מגוגל: " + data.error.message;
-                } else {
-                    log.style.color = "green";
-                    log.innerText = "עובד!!! הנה התשובה:\n" + data.candidates[0].content.parts[0].text;
-                }
-            } catch (e) {
-                log.innerText = "שגיאה כללית: " + e.message;
-            }
+    async function runTest() {
+        const log = document.getElementById('log');
+        const input = document.getElementById('userInput').value;
+        
+        log.innerHTML = "תחילת בדיקה...<br>";
+
+        if (API_KEY.includes("הדבק_כאן")) {
+            log.innerHTML += "<span style='color:red'>שגיאה: לא החלפת את המפתח בקוד!</span>";
+            return;
         }
-    </script>
+
+        try {
+            // ניסיון ישיר למודל הכי נפוץ בגרסה הכי יציבה
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            
+            log.innerHTML += `מתחבר לכתובת גוגל...<br>`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: input || "היי" }] }] })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                log.innerHTML += `<span style='color:orange'>גוגל החזירה שגיאה: ${data.error.message}</span><br>`;
+                log.innerHTML += `קוד שגיאה: ${data.error.status}`;
+            } else if (data.candidates) {
+                log.innerHTML = `<span style='color:#0f0'>הצלחה!!! התשובה:</span><br>${data.candidates[0].content.parts[0].text}`;
+            } else {
+                log.innerHTML += "קיבלתי תשובה ריקה מגוגל. מוזר.";
+            }
+
+        } catch (err) {
+            log.innerHTML += `<span style='color:red'>שגיאה קריטית: ${err.message}</span>`;
+        }
+    }
+</script>
+
 </body>
 </html>
