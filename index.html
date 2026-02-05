@@ -2,60 +2,54 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ChatLBZ - Last Stand 🚀</title>
+    <title>ChatLBZ 2026</title>
     <style>
-        body { font-family: sans-serif; background: #72edda; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        body { font-family: sans-serif; background: #72edda; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         button { background: #0044ff; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
-        #res { margin-top: 20px; padding: 15px; border-radius: 10px; background: #f9f9f9; min-height: 40px; color: #333; text-align: right; line-height: 1.5; font-size: 14px; }
+        #res { margin-top: 20px; padding: 15px; border-radius: 10px; background: #f9f9f9; min-height: 40px; color: #333; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="color: #0044ff;">ChatLBZ Ultra</h2>
-    <p style="font-size: 12px; color: #666;">ניסיון אחרון עם מודל Gemini 2.0</p>
+    <h2>ChatLBZ Final</h2>
     <input type="text" id="userInput" placeholder="כתוב משהו...">
-    <button onclick="askAI()">שלח בדיקה 🚀</button>
-    <div id="res">המתן לתשובה...</div>
+    <button onclick="askAI()">שלח 🚀</button>
+    <div id="res">כאן תופיע התשובה...</div>
 </div>
 
 <script>
-    const API_KEY = "AIzaSyCKOBTeRrTVXa93PRfNNMoa5G5p2QlJNgM"; 
+    // תדביק כאן את המפתח החדש שיצרת אחרי ה-ENABLE
+    const API_KEY = "AIzaSyBJbeNnQa2q_TUKt-hosPcOxdu_-LYpVu8"; 
 
     async function askAI() {
         const out = document.getElementById('res');
-        const input = document.getElementById('userInput').value.trim();
+        const input = document.getElementById('userInput').value;
         if(!input) return;
 
-        out.innerText = "מתחבר לשרתי גוגל 2.0...";
-        out.style.color = "blue";
-
+        out.innerText = "מעבד...";
+        
         try {
-            // ניסיון עם המודל הכי חדיש - gemini-2.0-flash-exp
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY.trim()}`;
+            // הכתובת הזו עובדת רק אם ה-API מופעל ב-Cloud Console
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY.trim()}`;
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: input }] }]
-                })
+                body: JSON.stringify({ contents: [{ parts: [{ text: input }] }] })
             });
 
             const data = await response.json();
 
             if (data.error) {
-                out.innerText = "שגיאה סופית: " + data.error.message + "\n\n(נראה שצריך להפעיל את ה-API ב-Google Cloud Console)";
-                out.style.color = "red";
+                out.innerText = "שגיאה: " + data.error.message;
             } else {
                 out.innerText = data.candidates[0].content.parts[0].text;
-                out.style.color = "black";
             }
-
         } catch (e) {
-            out.innerText = "תקלה: " + e.message;
+            out.innerText = "תקלה בחיבור.";
         }
     }
 </script>
